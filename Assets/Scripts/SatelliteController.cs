@@ -15,8 +15,9 @@ public class SatelliteController : MonoBehaviour
         float distance = Vector3.Distance(transform.position, earth.position);
 
         // 万有引力の計算
-        float forceMagnitude = gravitationalConstant * (earth.GetComponent<EarthAgent>().mass * satellite.GetComponent<SatelliteAgent>().mass) / Mathf.Pow(distance, 2);
+        float forceMagnitude = -gravitationalConstant * (earth.GetComponent<EarthAgent>().mass * satellite.GetComponent<SatelliteAgent>().mass) / Mathf.Pow(distance, 2);
         Vector3 force = directionToEarth * forceMagnitude;
+        Debug.Log("force: " + force);
 
         // 角度に応じたスラスタの推力を適用
         int angleSegment = (int)((Mathf.Atan2(transform.position.z, transform.position.x) * Mathf.Rad2Deg + 360) % 360 / 11.25f);
