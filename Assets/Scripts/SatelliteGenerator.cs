@@ -17,13 +17,7 @@ public class SatelliteGenerator : MonoBehaviour
 
         Transform earthTransform = earth.transform;
         GameObject satellite = Instantiate(satellitePrehab);
-        SatelliteController controller = satellite.GetComponent<SatelliteController>();
-        if (controller == null)
-        {
-            controller = satellite.AddComponent<SatelliteController>();
-        }
-        controller.satellite = satellite.transform;
-        controller.earth = earthTransform;
+        satellite.SetActive(true);
     }
 
 }

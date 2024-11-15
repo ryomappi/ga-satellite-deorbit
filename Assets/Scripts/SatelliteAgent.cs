@@ -20,7 +20,7 @@ public class SatelliteAgent : MonoBehaviour
     void Start()
     {
         // 衛星の初期位置を設定
-        transform.position = new Vector3(7.378f, 0, 0); // 地球の半径 + 衛星の高度 (m)
+        transform.position = new Vector3(1275.6f + 7.378f, 0, 0); // 地球の半径 + 衛星の高度 (m)
         Debug.Log("Initial position: " + transform.position);
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.mass = mass;
