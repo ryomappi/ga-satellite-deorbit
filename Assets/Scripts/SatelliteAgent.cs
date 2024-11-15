@@ -4,7 +4,7 @@ public class SatelliteAgent : MonoBehaviour
 {
     public float mass = 0.0001f; // 衛星の質量 (kg)
     public float thrustForce = 0.6f; // 各スラスタの最大推力 (N)
-    public float initialVelocity = 7.350103183406522f; // 初期速度 (m/s)
+    public float initialVelocity = 7.350103183406522f; // 初期速度 (m/s) <- km に直した方が良いかも
     private int[] gene; // 遺伝子: スラスタ制御を32区分で保持
 
     void Awake()
@@ -20,7 +20,7 @@ public class SatelliteAgent : MonoBehaviour
     void Start()
     {
         // 衛星の初期位置を設定
-        transform.position = new Vector3(1275.6f + 7.378f, 0, 0); // 地球の半径 + 衛星の高度 (m)
+        transform.position = new Vector3(12756.0f / 2.0f + 7378.0f, 0, 0); // 地球の半径 + 衛星の高度 (m) <- kmに直した方が良いかも
         Debug.Log("Initial position: " + transform.position);
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.mass = mass;
