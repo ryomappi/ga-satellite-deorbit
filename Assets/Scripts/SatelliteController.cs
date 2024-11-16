@@ -3,22 +3,21 @@ using UnityEngine;
 // 衛星エージェントの制御を行うクラス
 public class SatelliteController : MonoBehaviour
 {
-    public Transform satellite;
-    public Transform earth;
-    private float gravitationalConstant = 6.67430e-40f; // 万有引力定数 (m^3/kg/s^2)
+    public GameObject earth;
+    private float gravitationalConstant = 6.67430e-20f; // 万有引力定数 (km^3/kg/s^2)
 
     void FixedUpdate()
     {
         // 地球を中心とした円運動をシミュレーション
-        Vector3 directionToEarth = (earth.position - transform.position).normalized;
-        float distance = Vector3.Distance(transform.position, earth.position);
+        Vector3 directionToEarth = (earth.transform.position - transform.position).normalized;
+        float distance = Vector3.Distance(transform.position, earth.transform.position);
         Debug.Log("distance: " + distance);
 
         // 万有引力の計算
-        float forceMagnitude = gravitationalConstant * (earth.GetComponent<EarthAgent>().mass * satellite.GetComponent<SatelliteAgent>().mass) / Mathf.Pow(distance, 2);
+        float forceMagnitude = gravitationalConstant * (earth.transform.GetComponent<EarthAgent>().mass * this.GetComponent<SatelliteAgent>().mass) / Mathf.Pow(distance, 2);
         Vector3 force = directionToEarth * forceMagnitude;
-        Debug.Log("force: " + force);
-        GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse);
+        Debug.Log("force: " + force.magnitude);
+        GetComponent<Rigidbody>().AddForce(force);
 
         // 角度に応じたスラスタの推力を適用
         // int angleSegment = (int)((Mathf.Atan2(transform.position.z, transform.position.x) * Mathf.Rad2Deg + 360) % 360 / 11.25f);
@@ -28,7 +27,7 @@ public class SatelliteController : MonoBehaviour
     // スラスタの推力を適用
     void ApplyThrust(int angleSegment)
     {
-        int thrustState = satellite.GetComponent<SatelliteAgent>().GetThrustState(angleSegment);
+        int thrustState = this.GetComponent<SatelliteAgent>().GetThrustState(angleSegment);
 
         // 0: なし, 1: 点火を表す
         if ((thrustState & 8) > 0) ApplyForce(Vector3.forward);   // 上スラスタ
@@ -40,6 +39,6 @@ public class SatelliteController : MonoBehaviour
     // 力を適用
     void ApplyForce(Vector3 direction)
     {
-        GetComponent<Rigidbody>().AddForce(direction * satellite.GetComponent<SatelliteAgent>().thrustForce);
+        GetComponent<Rigidbody>().AddForce(direction * this.GetComponent<SatelliteAgent>().thrustForce);
     }
 }
