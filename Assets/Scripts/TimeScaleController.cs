@@ -1,14 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class TimeScaleController : MonoBehaviour
 {
-    public void OnTimeScaleChanged(float timeScale)
+    private float timeScale = 1.0f; // 初期値は1.0 (通常速度)
+
+    void OnGUI()
     {
+        // スライダーを描画
+        GUI.Label(new Rect(10, 10, 200, 20), "Time Scale: " + timeScale.ToString("F2"));
+        timeScale = GUI.HorizontalSlider(new Rect(10, 40, 200, 20), timeScale, 0.1f, 10.0f);
+
+        // TimeScale を更新
         Time.timeScale = timeScale;
     }
 }

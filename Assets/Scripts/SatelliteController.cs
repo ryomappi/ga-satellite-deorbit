@@ -5,6 +5,14 @@ public class SatelliteController : MonoBehaviour
 {
     public GameObject earth;
     private float gravitationalConstant = 6.67430e-20f; // 万有引力定数 (km^3/kg/s^2)
+    private float earthMass;
+    private float satelliteMass;
+
+    void Start()
+    {
+        earthMass = earth.transform.GetComponent<EarthAgent>().mass;
+        satelliteMass = GetComponent<SatelliteAgent>().mass;
+    }
 
     void FixedUpdate()
     {
@@ -14,10 +22,10 @@ public class SatelliteController : MonoBehaviour
         Debug.Log("distance: " + distance);
 
         // 万有引力の計算
-        float forceMagnitude = gravitationalConstant * (earth.transform.GetComponent<EarthAgent>().mass * this.GetComponent<SatelliteAgent>().mass) / Mathf.Pow(distance, 2);
+        float forceMagnitude = gravitationalConstant * (earthMass * satelliteMass) / (distance * distance);
         Vector3 force = directionToEarth * forceMagnitude;
         Debug.Log("force: " + force.magnitude);
-        GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse);
+        GetComponent<Rigidbody>().AddForce(force, ForceMode.Force);
 
         // 角度に応じたスラスタの推力を適用
         // int angleSegment = (int)((Mathf.Atan2(transform.position.z, transform.position.x) * Mathf.Rad2Deg + 360) % 360 / 11.25f);
