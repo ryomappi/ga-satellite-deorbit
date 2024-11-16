@@ -17,7 +17,7 @@ public class SatelliteController : MonoBehaviour
         float forceMagnitude = gravitationalConstant * (earth.transform.GetComponent<EarthAgent>().mass * this.GetComponent<SatelliteAgent>().mass) / Mathf.Pow(distance, 2);
         Vector3 force = directionToEarth * forceMagnitude;
         Debug.Log("force: " + force.magnitude);
-        GetComponent<Rigidbody>().AddForce(force);
+        GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse);
 
         // 角度に応じたスラスタの推力を適用
         // int angleSegment = (int)((Mathf.Atan2(transform.position.z, transform.position.x) * Mathf.Rad2Deg + 360) % 360 / 11.25f);
