@@ -121,7 +121,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2651374d644bf4e1daeb4964292b865c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 0
+  force: 0.6
+  fuelConsumption: 0.05
 --- !u!1 &4279985574434504366
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,7 +244,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2651374d644bf4e1daeb4964292b865c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 0
+  force: 0.6
+  fuelConsumption: 0.05
 --- !u!1 &6221873601760347515
 GameObject:
   m_ObjectHideFlags: 0
@@ -365,7 +367,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2651374d644bf4e1daeb4964292b865c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 0
+  force: 0.6
+  fuelConsumption: 0.05
 --- !u!1 &6974505069410188170
 GameObject:
   m_ObjectHideFlags: 0
@@ -413,6 +416,7 @@ GameObject:
   - component: {fileID: 4105132158422297316}
   - component: {fileID: 2604159780881818443}
   - component: {fileID: 1084261164947572423}
+  - component: {fileID: 6100074270831296651}
   m_Layer: 0
   m_Name: LeftThruster
   m_TagString: Untagged
@@ -509,6 +513,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6100074270831296651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7946935742474729422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2651374d644bf4e1daeb4964292b865c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  force: 0.6
+  fuelConsumption: 0.05
 --- !u!1 &8671342661150307985
 GameObject:
   m_ObjectHideFlags: 0

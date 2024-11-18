@@ -102,10 +102,12 @@ public class GaEnvironment : MonoBehaviour
         if (CurrentGenes.Count == 0 && AgentsSet.Count == 0)  // 一世代の全ての個体がタスクを終了したら
         {
             SetNextGeneration();
+            Debug.Log("Next Generation");
         }
         else
         {
             SetNextAgents();
+            Debug.Log("Next Agents");
         }
     }
 
@@ -194,6 +196,7 @@ public class GaEnvironment : MonoBehaviour
             + "\nBest Record: " + BestRecord
             + "\nBest this gen: " + GenBestRecord
             + "\nAverage: " + AvgUsedFuel;
+        Debug.Log(PopulationText.text);
     }
     private struct AgentPair
     {

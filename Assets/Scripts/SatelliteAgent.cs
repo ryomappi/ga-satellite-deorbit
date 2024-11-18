@@ -84,12 +84,14 @@ public class SatelliteAgent : Agent
     // 衛星の地球に対する現在の角度を取得
     public float GetCurrentAngle()
     {
+        Debug.Log("Current Angle: " + Mathf.Atan2(transform.position.z, transform.position.x) * Mathf.Rad2Deg);
         return Mathf.Atan2(transform.position.z, transform.position.x) * Mathf.Rad2Deg;
     }
 
     // angleSegmentを取得
     public int GetAngleSegment()
     {
+        Debug.Log("Angle Segment: " + (int)((GetCurrentAngle() + 360) % 360 / 11.25f));
         return (int)((GetCurrentAngle() + 360) % 360 / 11.25f);
     }
 
