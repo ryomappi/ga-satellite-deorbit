@@ -1,0 +1,37 @@
+using UnityEditor.Purchasing;
+using UnityEngine;
+
+public abstract class Agent : MonoBehaviour
+{
+    public bool IsDone { get; private set; }  // エージェントがタスクを完了したかどうか
+    public bool IsFrozen { get; private set; }  // エージェントが凍結されているかどうか
+    public float Fitness { get; private set; }  // エージェントの適応度
+    public float SpentTime { get; private set; }  // エージェントがタスク達成に使用した時間
+    public float UsedFuel { get; private set; }  // エージェントがタスク達成に使用した燃料
+
+    public void SetFitness(float fitness)
+    {
+        Fitness = fitness;
+    }
+    public void AddFitness(float fitness)
+    {
+        Fitness += fitness;
+    }
+    public abstract void AgentUpdate();
+    public abstract void AgentReset();
+    public abstract void ApplyGene(Gene gene);
+    public void Done()
+    {
+        IsDone = true;
+    }
+    public void Freeze()
+    {
+        IsFrozen = true;
+    }
+    public void Reset()
+    {
+        AgentReset();
+        IsDone = false;
+        IsFrozen = false;
+    }
+}
