@@ -26,6 +26,4 @@ public abstract class GeneOperator : ScriptableObject
         }
         return (child_gene1,child_gene2);
     }
-
-    public abstract (Gene,Gene) BrendCrossover(Gene gene1,Gene gene2,int generation);
 }

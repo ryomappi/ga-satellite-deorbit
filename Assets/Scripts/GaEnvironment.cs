@@ -16,7 +16,6 @@ public class GaEnvironment : MonoBehaviour
     private int EliteSelection { get { return eliteSelection; } }
     [SerializeField][Range(1, 300)] private int nAgents = 4;  // エージェントの数
     private int NAgents { get { return nAgents; } }
-    [SerializeField] private bool isBLXBlend;  // ブレンド交叉を使用するかどうか
     [Header("Agent Prefab"), SerializeField] public GameObject GObjectAgent = null;
     [Header("UI References"), SerializeField] private Text populationText = null;
     private Text PopulationText { get { return populationText; } }
@@ -173,21 +172,13 @@ public class GaEnvironment : MonoBehaviour
             if (children.Count < TotalPopulation * mutate_only) children.Add(Operator.Mutate(tournamentMembers[1], Generation));
         }
 
-        // トーナメント選択 + (交叉,BLX-α(ブレンド交叉))
+        // トーナメント選択 + (交叉,　BLX-α (ブレンド交叉))
         while (children.Count < TotalPopulation)
         {
             var tournamentMembers = Genes.AsEnumerable().OrderBy(x => Guid.NewGuid()).Take(tournamentSelection).ToList();
             tournamentMembers.Sort(CompareGenes);
             Gene child1, child2;
-            //インスペクタにおける指定によって交叉方法を変更
-            if (isBLXBlend)
-            {
-                (child1, child2) = Operator.BrendCrossover(tournamentMembers[0], tournamentMembers[1], Generation);  //ここを変更 <- どういうこと？
-            }
-            else
-            {
-                (child1, child2) = Operator.Crossover(tournamentMembers[0], tournamentMembers[1], Generation);
-            }
+            (child1, child2) = Operator.Crossover(tournamentMembers[0], tournamentMembers[1], Generation);
             children.Add(child1);
             if (children.Count < TotalPopulation) children.Add(child2);
         }
