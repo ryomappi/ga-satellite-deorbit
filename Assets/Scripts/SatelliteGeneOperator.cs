@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 
-[CreateAssetMenu]
+[CreateAssetMenu(fileName = "SatelliteGeneOperator", menuName = "ScriptableObjects/SatelliteGeneOperator")]
 // 衛星エージェントの遺伝子操作を行うクラス
 public class SatelliteGeneOperator : GeneOperator
 {
