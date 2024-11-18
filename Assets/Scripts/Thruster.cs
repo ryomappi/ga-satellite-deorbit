@@ -4,6 +4,7 @@ public class Thruster : MonoBehaviour
 {
     public float force;  // スラスタの推力 (N = kg * m/s^2)
     private Vector3 direction;  // スラスタの向き
+    public float fuelConsumption;  // 燃料消費量 (kg/s)
 
     void Start()
     {
