@@ -10,13 +10,13 @@ public class GaEnvironment : MonoBehaviour
 {
     [Header("Settings"), SerializeField] private int totalPopulation = 200;  // 衛星エージェントの個体数
     private int TotalPopulation { get { return totalPopulation; } }
-    [SerializeField] private int tournamentSelection = 85;
+    [SerializeField] private int tournamentSelection = 85;  // トーナメント選択の選択数
     private int TournamentSelection { get { return tournamentSelection; } }
-    [SerializeField] private int eliteSelection = 4;
+    [SerializeField] private int eliteSelection = 4;  // エリート選択の選択数
     private int EliteSelection { get { return eliteSelection; } }
-    [SerializeField][Range(1, 300)] private int nAgents = 4;
+    [SerializeField][Range(1, 300)] private int nAgents = 4;  // エージェントの数
     private int NAgents { get { return nAgents; } }
-    [SerializeField] private bool isBLXBlend;
+    [SerializeField] private bool isBLXBlend;  // ブレンド交叉を使用するかどうか
     [Header("Agent Prefab"), SerializeField] public GameObject GObjectAgent = null;
     [Header("UI References"), SerializeField] private Text populationText = null;
     private Text PopulationText { get { return populationText; } }
@@ -32,7 +32,7 @@ public class GaEnvironment : MonoBehaviour
     private float BestRecord { get; set; }  // 全世代の最大適応度
     private List<AgentPair> AgentsSet = new List<AgentPair>();  // 生成したエージェントと遺伝子のペアを格納するリスト
     private Queue<Gene> CurrentGenes;  // 現在の遺伝子を格納するキュー
-    [Header("Gene"), SerializeField] private GeneOperator Operator = null;
+    [Header("Gene"), SerializeField] private GeneOperator Operator = null;  // 遺伝子操作を行うオペレーター
 
     void Awake()
     {

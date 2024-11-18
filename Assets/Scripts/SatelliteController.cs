@@ -33,16 +33,16 @@ public class SatelliteController : MonoBehaviour
     }
 
     // スラスタの推力を適用
-    void ApplyThrust(int angleSegment)
-    {
-        int thrustState = this.GetComponent<SatelliteAgent>().GetThrustState(angleSegment);
+    // void ApplyThrust(int angleSegment)
+    // {
+    //     int thrustState = this.GetComponent<SatelliteAgent>().GetThrustState(angleSegment);
 
-        // 0: なし, 1: 点火を表す
-        if ((thrustState & 8) > 0) ApplyForce(Vector3.forward);   // 上スラスタ
-        if ((thrustState & 4) > 0) ApplyForce(Vector3.back);      // 下スラスタ
-        if ((thrustState & 2) > 0) ApplyForce(Vector3.left);      // 左スラスタ
-        if ((thrustState & 1) > 0) ApplyForce(Vector3.right);     // 右スラスタ
-    }
+    //     // 0: なし, 1: 点火を表す
+    //     if ((thrustState & 8) > 0) ApplyForce(Vector3.forward);   // 上スラスタ
+    //     if ((thrustState & 4) > 0) ApplyForce(Vector3.back);      // 下スラスタ
+    //     if ((thrustState & 2) > 0) ApplyForce(Vector3.left);      // 左スラスタ
+    //     if ((thrustState & 1) > 0) ApplyForce(Vector3.right);     // 右スラスタ
+    // }
 
     // 力を適用
     void ApplyForce(Vector3 direction)
