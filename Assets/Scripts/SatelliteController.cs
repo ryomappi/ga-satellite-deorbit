@@ -14,8 +14,7 @@ public class SatelliteController : MonoBehaviour
         satelliteMass = GetComponent<SatelliteAgent>().mass;
     }
 
-    void FixedUpdate()
-    {
+    public void Gravitate() {
         // 地球を中心とした円運動をシミュレーション
         Vector3 directionToEarth = (earth.transform.position - transform.position).normalized;
         float distance = Vector3.Distance(transform.position, earth.transform.position);
@@ -26,6 +25,10 @@ public class SatelliteController : MonoBehaviour
         Vector3 force = directionToEarth * forceMagnitude;
         Debug.Log("force: " + force.magnitude);
         GetComponent<Rigidbody>().AddForce(force, ForceMode.Force);
+    }
+    void FixedUpdate()
+    {
+        Gravitate();
 
         // 角度に応じたスラスタの推力を適用
         // int angleSegment = (int)((Mathf.Atan2(transform.position.z, transform.position.x) * Mathf.Rad2Deg + 360) % 360 / 11.25f);

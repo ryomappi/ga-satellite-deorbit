@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.IO;
 using System.Text;
 
-public class SatelliteAgent : MonoBehaviour
+public class SatelliteAgent : Agent
 {
     private SatelliteController Controller { get; set; }
     private Vector3 StartPosition { get; set; }
@@ -40,12 +40,23 @@ public class SatelliteAgent : MonoBehaviour
     }
 
     // 新しい個体の初期化
-    // public override void AgentReset()
-    // {
-    //     transform.position = new Vector3(12756.0f / 2.0f + 1000f, 0, 0); // 地球の半径 + 衛星の高度 (km)
+    public override void AgentReset()
+    {
+        transform.position = new Vector3(12756.0f / 2.0f + 1000f, 0, 0); // 地球の半径 + 衛星の高度 (km)
 
-    // }
+    }
 
+    // Agentの更新、終了判定と報酬の更新
+    public override void AgentUpdate()
+    {
+
+    }
+
+    // Geneに応じた行動の適用
+    public override void ApplyGene(Gene gene)
+    {
+        throw new NotImplementedException();
+    }
     void FixedUpdate()
     {
         // 衛星の位置をログ出力
