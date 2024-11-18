@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 // 衛星エージェントの制御を行うクラス
 public class SatelliteController : MonoBehaviour
@@ -7,16 +8,29 @@ public class SatelliteController : MonoBehaviour
     private float gravitationalConstant = 6.67430e-20f; // 万有引力定数 (km^3/kg/s^2)
     private float earthMass;
     private float satelliteMass;
-    private bool isGravitating = true;
+    private SatelliteAgent satelliteAgent;
+    private Thruster[] thrusters;
 
     void Start()
     {
         earthMass = earth.transform.GetComponent<EarthAgent>().mass;
         satelliteMass = GetComponent<SatelliteAgent>().mass;
+        satelliteAgent = GetComponent<SatelliteAgent>();
+        thrusters = GetComponentsInChildren<Thruster>();
+    }
+
+    public void Stop()
+    {
+        // 衛星の動きを止め、万有引力の適用も停止する
+        satelliteAgent.IsGravitated = false;
+        GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
     }
 
     public void Gravitate()
     {
+        if (!satelliteAgent.IsGravitated) return;
+
         // 地球を中心とした円運動をシミュレーション
         Vector3 directionToEarth = (earth.transform.position - transform.position).normalized;
         float distance = Vector3.Distance(transform.position, earth.transform.position);
@@ -29,46 +43,24 @@ public class SatelliteController : MonoBehaviour
         GetComponent<Rigidbody>().AddForce(force, ForceMode.Force);
     }
 
-    public void Stop()
+    // スラスタの推力を適用
+    void ApplyThrust(int thrustState)
     {
-        // 衛星の動きを止め、万有引力の適用も停止する
-        isGravitating = false;
-        GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-    }
-    void FixedUpdate()
-    {
-        if (isGravitating == true)
+        for (int i = 0; i < thrusters.Length; i++)
         {
-            Gravitate();
+            if ((thrustState & (1 << i)) != 0)
+            {
+                thrusters[i].ApplyForce(GetComponent<Rigidbody>());
+            }
         }
 
-
-        // 角度に応じたスラスタの推力を適用
-        // int angleSegment = (int)((Mathf.Atan2(transform.position.z, transform.position.x) * Mathf.Rad2Deg + 360) % 360 / 11.25f);
-        // ApplyThrust(angleSegment);
     }
 
-    // スラスタの推力を適用
-    void ApplyThrust(int angleSegment)
-    {
-    }
-
-    // スラスタの推力を適用
-    // void ApplyThrust(int angleSegment)
+    // void FixedUpdate()
     // {
-    //     int thrustState = this.GetComponent<SatelliteAgent>().GetThrustState(angleSegment);
-
-    //     // 0: なし, 1: 点火を表す
-    //     if ((thrustState & 8) > 0) ApplyForce(Vector3.forward);   // 上スラスタ
-    //     if ((thrustState & 4) > 0) ApplyForce(Vector3.back);      // 下スラスタ
-    //     if ((thrustState & 2) > 0) ApplyForce(Vector3.left);      // 左スラスタ
-    //     if ((thrustState & 1) > 0) ApplyForce(Vector3.right);     // 右スラスタ
+    //     if (isGravitating == true)
+    //     {
+    //         Gravitate(isGravitating);
+    //     }
     // }
-
-    // 力を適用
-    void ApplyForce(Vector3 direction)
-    {
-        GetComponent<Rigidbody>().AddForce(direction * this.GetComponent<SatelliteAgent>().thrustForce);
-    }
 }

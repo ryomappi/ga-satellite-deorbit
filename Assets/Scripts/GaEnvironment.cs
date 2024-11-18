@@ -79,14 +79,14 @@ public class GaEnvironment : MonoBehaviour
     // 生きているAgentを更新する
     void FixedUpdate()
     {
-        foreach (var pair in AgentsSet.Where(p => !p.agent.IsDone))
-        {  // IsDoneがfalseのAgentのみ更新
+        foreach (var pair in AgentsSet.Where(p => !p.agent.IsDone))  // IsDoneがfalseのAgentのみ更新
+        {
             pair.agent.AgentUpdate();
         }
 
         AgentsSet.RemoveAll(p =>
         {
-            if (p.agent.IsDone)
+            if (p.agent.IsDone)  // IsDoneがtrueのAgentのみ削除
             {
                 float fitness = p.agent.Fitness;
                 float usedFuel = p.agent.UsedFuel;

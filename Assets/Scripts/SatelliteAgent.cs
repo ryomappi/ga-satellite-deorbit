@@ -18,6 +18,8 @@ public class SatelliteAgent : Agent
     public float CurrentMass { get; set; }  // 現在の質量 (kg)
     public float MaxHealth { get; set; }  // エージェントの最大体力
     [SerializeField] private float Health;  // エージェントの体力
+    public bool IsGravitated { get; set; }  // 万有引力を適用するかどうか
+    public float CurrentAngle { get; set; }  // 地球に対する衛星の角度
     private GaEnvironment ga;
 
     void Awake()
@@ -34,6 +36,7 @@ public class SatelliteAgent : Agent
         StartVelocity = new Vector3(0, InitialVelocity, 0);
         Health = MaxHealth;
         SatelliteRb.useGravity = false;
+        IsGravitated = true;
 
         // 衛星の初期位置を設定
         transform.position = new Vector3(12756.0f / 2.0f + 1000f, 0, 0);
@@ -42,10 +45,10 @@ public class SatelliteAgent : Agent
         SatelliteRb.mass = mass;
         SatelliteRb.linearVelocity = StartVelocity;
 
-        // StreamWriter file = new StreamWriter(@"test/record.csv", false, Encoding.UTF8);
-        // file.WriteLine(string.Format("{0},{1},{2},{3}", "Generation", "Best Record", "Best this gen", "Average"));
-        // Console.WriteLine("ファイルの作成");
-        // file.Close();
+        StreamWriter file = new StreamWriter(@"test/record.csv", false, Encoding.UTF8);
+        file.WriteLine(string.Format("{0},{1},{2},{3}", "Generation", "Best Record", "Best this gen", "Average"));
+        Console.WriteLine("ファイルの作成");
+        file.Close();
 
         GameObject now_env = GameObject.Find("Environment");
         ga = now_env.GetComponent<GaEnvironment>();
@@ -66,22 +69,55 @@ public class SatelliteAgent : Agent
         transform.position = StartPosition;
         SatelliteRb.mass = mass;
         SatelliteRb.linearVelocity = StartVelocity;
-        CurrentHeight = Vector3.Distance(transform.position, Controller.earth.transform.position) - 12756.0f / 2.0f;
+        CurrentHeight = GetCurrentHeight();
         CurrentMass = SatelliteRb.mass;
+        CurrentAngle = GetCurrentAngle();
+        IsGravitated = true;
 
         SetFitness(0);
         SetUsedFuel(0);
+    }
+
+    // 衛星の現在の高度を取得
+    public float GetCurrentHeight()
+    {
+        return Vector3.Distance(transform.position, Controller.earth.transform.position) - 12756.0f / 2.0f;
+    }
+
+    // 衛星の地球に対する現在の角度を取得
+    public float GetCurrentAngle()
+    {
+        return Mathf.Atan2(transform.position.z, transform.position.x) * Mathf.Rad2Deg;
+    }
+
+    // angleSegmentを取得
+    public int GetAngleSegment()
+    {
+        return (int)((GetCurrentAngle() + 360) % 360 / 11.25f);
     }
 
     // Agentの更新・終了判定と報酬の更新
     public override void AgentUpdate()
     {
         /*
-            更新: 衛星の高度・質量・使用燃料を更新する。
+            更新:
+            - 万有引力を適用する
+            - 衛星の角度に応じてスラスタを制御する
+            - 衛星の高度・質量・使用燃料を更新する
             終了判定: 衛星が目標の高度まで降下したらタスク終了
         */
+
+        // 万有引力を適用
+        Gravitate();
+
+        // 衛星の角度に応じてスラスタを制御 + 使用燃料を更新
+
+
+        // 衛星の質量を更新
+
+        // 衛星の高度を更新
         float prevHeight = CurrentHeight;
-        CurrentHeight = Vector3.Distance(transform.position, Controller.earth.transform.position) - 12756.0f / 2.0f;
+        CurrentHeight = GetCurrentHeight();
 
         // 高度が減少しない場合、エージェントの体力を減少させる
         if (CurrentHeight >= prevHeight)
@@ -120,10 +156,5 @@ public class SatelliteAgent : Agent
             SatelliteRb.AddForce(direction * thrustForce, ForceMode.Force);
             AddUsedFuel(thrustForce);
         }
-    }
-    void FixedUpdate()
-    {
-        // 衛星の位置をログ出力
-        Debug.Log("Position: " + transform.position);
     }
 }
