@@ -50,6 +50,11 @@ public class SatelliteController : MonoBehaviour
     }
 
     // スラスタの推力を適用
+    void ApplyThrust(int angleSegment)
+    {
+    }
+
+    // スラスタの推力を適用
     // void ApplyThrust(int angleSegment)
     // {
     //     int thrustState = this.GetComponent<SatelliteAgent>().GetThrustState(angleSegment);

@@ -77,23 +77,49 @@ public class SatelliteAgent : Agent
     public override void AgentUpdate()
     {
         /*
-            更新: 衛星の高度・質量・燃料を更新
+            更新: 衛星の高度・質量・使用燃料を更新する。
             終了判定: 衛星が目標の高度まで降下したらタスク終了
-            死亡判定: 高度が減少しない場合、エージェントは死亡
         */
+        float prevHeight = CurrentHeight;
         CurrentHeight = Vector3.Distance(transform.position, Controller.earth.transform.position) - 12756.0f / 2.0f;
+
+        // 高度が減少しない場合、エージェントの体力を減少させる
+        if (CurrentHeight >= prevHeight)
+        {
+            Health -= 1;
+        }
+
         if (CurrentHeight < 500)  // 目標高度: 500km
         {
             Controller.Stop();
             Done();
-            
+            return;
         }
     }
 
-    // Geneに応じた行動の適用
+    // Geneに応じた衛星のスラスタの制御
     public override void ApplyGene(Gene gene)
     {
-        throw new NotImplementedException();
+        /* 衛星のスラスタの制御
+            Geneクラスのdataリストの各要素は、ある地球に対する衛星の姿勢の角度の時に上下左右どのスラスタを噴くかに対応しており、
+            ここでは11.25度ずつに32分割している。
+
+            各要素の値は、上下左右の各スラスタについて、0: 噴射しない, 1: 噴射する とし、これを上下左右の順に結合した2進数の値を10進数に
+            変換したものとなっており、2^4 = 16通りの組み合わせが存在する。
+            e.g.) 12 -> 1100 -> 上下のスラスタを噴射する
+
+            各変数の説明:
+            - angleSegment: どの角度の姿勢に対応するかを示すindex
+            - thrustState: 上下左右どのスラスタを噴くかを示す
+        */
+        int angleSegment = (int)((Mathf.Atan2(transform.position.z, transform.position.x) * Mathf.Rad2Deg + 360) % 360 / 11.25f);
+        int thrustState = gene.data[angleSegment];
+        if (thrustState == 1)
+        {
+            Vector3 direction = (Controller.earth.transform.position - transform.position).normalized;
+            SatelliteRb.AddForce(direction * thrustForce, ForceMode.Force);
+            AddUsedFuel(thrustForce);
+        }
     }
     void FixedUpdate()
     {
