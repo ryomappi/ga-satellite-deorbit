@@ -17,9 +17,19 @@ public abstract class Agent : MonoBehaviour
     {
         Fitness += fitness;
     }
+    public void SetUsedFuel(float usedFual)
+    {
+        UsedFuel = usedFual;
+    }
+    public void AddUsedFuel(float usedFual)
+    {
+        UsedFuel += usedFual;
+    }
     public abstract void AgentUpdate();
     public abstract void AgentReset();
     public abstract void ApplyGene(Gene gene);
+    public abstract void Stop();
+    public abstract void Gravitate();
     public void Done()
     {
         IsDone = true;
