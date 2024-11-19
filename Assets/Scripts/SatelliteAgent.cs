@@ -13,6 +13,7 @@ public class SatelliteAgent : Agent
     public Rigidbody SatelliteRb { get; set; }
     public float InitialMass { get; set; }  // 衛星の質量 (kg)
     public float InitialVelocity { get; set; } // 初期速度 (km/s)
+    public float InitialHeight { get; set; }  // 初期高度 (km)
     [SerializeField] private float CurrentHeight;  // 現在の高度 (km)
     public float MaxHealth { get; set; }  // エージェントの最大体力
     [SerializeField] private float Health;  // エージェントの体力
@@ -27,7 +28,8 @@ public class SatelliteAgent : Agent
     }
     void Start()
     {
-        StartPosition = new Vector3(12756.0f / 2.0f + 1000f, 0, 0);  // 地球の半径 + 衛星の高度 (km)
+        InitialHeight = 1000f;
+        StartPosition = new Vector3(12756.0f / 2.0f + InitialHeight, 0, 0);  // 地球の半径 + 衛星の高度 (km)
         InitialMass = 100f;
         InitialVelocity = 7.350103183f;
         StartVelocity = new Vector3(0, InitialVelocity, 0);
@@ -171,6 +173,8 @@ public class SatelliteAgent : Agent
         {
             Controller.Stop();
             Done();
+            // 降下した高度をfitnessとして報酬とする
+            AddFitness(InitialHeight - CurrentHeight);
             return;
         }
 
@@ -179,6 +183,7 @@ public class SatelliteAgent : Agent
         {
             Controller.Stop();
             Done();
+            AddFitness(InitialHeight - CurrentHeight);
             return;
         }
     }

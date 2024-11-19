@@ -94,8 +94,8 @@ public class GaEnvironment : MonoBehaviour
                 GenBestRecord = Math.Min(usedFuel, GenBestRecord);  // 小さいほど良い
                 Debug.Log($"Fitness: {fitness}, UsedFuel: {usedFuel}");
                 Debug.Log($"BestRecord: {BestRecord}, GenBestRecord: {GenBestRecord}");
-                p.gene.Fitness = fitness;
-                p.gene.UsedFuel = usedFuel;
+                p.gene.Fitness = fitness;  // 遺伝子に適応度を反映
+                p.gene.UsedFuel = usedFuel;  // 遺伝子に使用燃料を反映
                 SumFitness += fitness;
                 SumUsedFuel += usedFuel;
             }
