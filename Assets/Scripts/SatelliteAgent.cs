@@ -13,7 +13,7 @@ public class SatelliteAgent : Agent
     private Rigidbody SatelliteRb { get; set; }
     public float mass { get; set; }  // 衛星の質量 (kg)
     public float InitialVelocity { get; set; } // 初期速度 (km/s)
-    public float CurrentHeight { get; set; }  // 現在の高度 (km)
+    [SerializeField] public float CurrentHeight { get; private set; }  // 現在の高度 (km)
     public float CurrentMass { get; set; }  // 現在の質量 (kg)
     public float MaxHealth { get; set; }  // エージェントの最大体力
     [SerializeField] private float Health;  // エージェントの体力
@@ -32,13 +32,13 @@ public class SatelliteAgent : Agent
         mass = 100f;
         InitialVelocity = 7.350103183f;
         StartVelocity = new Vector3(0, InitialVelocity, 0);
+        MaxHealth = 1e3f;
         Health = MaxHealth;
         SatelliteRb.useGravity = false;
         IsGravitated = true;
 
         // 衛星の初期位置を設定
         transform.position = new Vector3(12756.0f / 2.0f + 1000f, 0, 0);
-        Debug.Log("Initial position: " + transform.position);
         // 衛星の質量、初速、重力を設定
         SatelliteRb.mass = mass;
         SatelliteRb.linearVelocity = StartVelocity;
@@ -95,18 +95,39 @@ public class SatelliteAgent : Agent
         return Vector3.Distance(transform.position, Controller.earth.transform.position) - 12756.0f / 2.0f;
     }
 
-    // 衛星の地球に対する現在の角度を取得
-    public float GetCurrentAngle()
+    // 地球中心基準での衛星の姿勢の傾きを計算
+    public Vector3 GetSatelliteTilt()
     {
-        Debug.Log("Current Angle: " + Mathf.Atan2(transform.position.z, transform.position.x) * Mathf.Rad2Deg);
-        return Mathf.Atan2(transform.position.z, transform.position.x) * Mathf.Rad2Deg;
+        // 地球中心（原点）を基準とした衛星の位置ベクトルを取得
+        Vector3 position = transform.position.normalized;
+
+        // 衛星の "up" ベクトルを取得（衛星のローカル座標系での上方向）
+        Vector3 satelliteUp = transform.up.normalized;
+
+        // 地球中心基準での衛星の傾きを計算
+        float tiltX = Vector3.Dot(satelliteUp, Vector3.right);  // X軸方向の傾き
+        float tiltY = Vector3.Dot(satelliteUp, Vector3.up);     // Y軸方向の傾き
+        float tiltZ = Vector3.Dot(satelliteUp, Vector3.forward);// Z軸方向の傾き
+
+        // デバッグ出力
+        Debug.Log($"Satellite Tilt - X: {tiltX}, Y: {tiltY}, Z: {tiltZ}");
+
+        // 傾きをベクトルとして返す
+        return new Vector3(tiltX, tiltY, tiltZ);
     }
 
-    // angleSegmentを取得
-    public int GetAngleSegment()
+    public int GetTiltSegment()
     {
-        Debug.Log("Angle Segment: " + (int)((GetCurrentAngle() + 360) % 360 / 11.25f));
-        return (int)((GetCurrentAngle() + 360) % 360 / 11.25f);
+        // 衛星の傾きベクトルを取得
+        Vector3 tilt = GetSatelliteTilt();
+
+        // 任意の軸に対する傾きをセグメント化
+        // 例: Z軸方向の傾きを32等分
+        float tiltZAngle = Mathf.Atan2(tilt.z, tilt.x) * Mathf.Rad2Deg;
+        int segment = (int)((tiltZAngle + 360) % 360 / 11.25f);
+
+        Debug.Log($"Tilt Segment: {segment}");
+        return segment;
     }
 
     // Agentの更新・終了判定と報酬の更新
@@ -123,16 +144,19 @@ public class SatelliteAgent : Agent
         // 万有引力を適用
         Gravitate();  // memo: これはSatelliteController.cs内のFixedUpdate()で呼び出してもいいかも
 
-        // 衛星の角度に応じてスラスタを制御 + 質量・使用燃料を更新 + 適応度・使用燃料を更新
-        int angleSegment = GetAngleSegment();
-        if (angleSegment >= 0 && angleSegment < GeneData.Count)
+        // 衛星の角度に応じてスラスタを制御 + 質量・使用燃料・適応度を更新
+        int tiltSegment = GetTiltSegment();
+        if (tiltSegment >= 0 && tiltSegment < GeneData.Count)
         {
-            int thrustState = GeneData[angleSegment];  // 0~15の値
+            int thrustState = GeneData[tiltSegment];  // 0~15の値
             ApplyThrust(thrustState);
+            // 質量を更新
+            SatelliteRb.mass = CurrentMass;
+            Debug.Log($"Fitness: {Fitness}, UsedFuel: {UsedFuel}");
         }
         else
         {
-            Debug.LogError("Angle segment out of range: " + angleSegment);
+            Debug.LogError("Angle segment out of range: " + tiltSegment);
         }
 
         // 衛星の高度を更新
@@ -140,7 +164,7 @@ public class SatelliteAgent : Agent
         CurrentHeight = GetCurrentHeight();
 
         // 高度が減少しない場合、エージェントの体力を減少させる
-        if (CurrentHeight >= prevHeight)
+        if (Health > 0 && CurrentHeight >= prevHeight)
         {
             Health -= 1;
         }
@@ -166,5 +190,6 @@ public class SatelliteAgent : Agent
     public override void ApplyGene(Gene gene)
     {
         GeneData = gene.data;  // 0~15の値が32個並んだリスト (各傾き角度時のスラスタの状態に対応)
+        Debug.Log($"GeneData.Count: {GeneData.Count}");
     }
 }

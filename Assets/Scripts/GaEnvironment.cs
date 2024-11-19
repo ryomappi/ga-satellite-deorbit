@@ -17,8 +17,8 @@ public class GaEnvironment : MonoBehaviour
     [SerializeField][Range(1, 300)] private int nAgents = 4;  // エージェントの数
     private int NAgents { get { return nAgents; } }
     [Header("Agent Prefab"), SerializeField] public GameObject GObjectAgent = null;
-    [Header("UI References"), SerializeField] private PopulationTextDisplay populationTextDisplay = null;
-    private PopulationTextDisplay TextDisplay { get { return populationTextDisplay; } }
+    [Header("UI References"), SerializeField] private PopulationTextDisplay textDisplay = null;
+    private PopulationTextDisplay TextDisplay { get { return textDisplay; } }
     private float GenBestRecord { get; set; }  // 世代の最大適応度
     private float SumFitness { get; set; }  // 一世代の適応度の合計
     private float AvgFitness { get; set; }  // 一世代の適応度の平均
@@ -37,7 +37,7 @@ public class GaEnvironment : MonoBehaviour
     {
         for (int i = 0; i < TotalPopulation; i++)
         {
-            Gene gene = new Gene();
+            Gene gene = Operator.Init();
             Genes.Add(gene);
         }
         for (int i = 0; i < NAgents; i++)
@@ -90,8 +90,10 @@ public class GaEnvironment : MonoBehaviour
             {
                 float fitness = p.agent.Fitness;
                 float usedFuel = p.agent.UsedFuel;
-                BestRecord = Math.Max(usedFuel, BestRecord);
-                GenBestRecord = Math.Max(usedFuel, GenBestRecord);
+                BestRecord = Math.Min(usedFuel, BestRecord);
+                GenBestRecord = Math.Min(usedFuel, GenBestRecord);
+                Debug.Log($"Fitness: {fitness}, UsedFuel: {usedFuel}");
+                Debug.Log($"BestRecord: {BestRecord}, GenBestRecord: {GenBestRecord}");
                 p.gene.Fitness = fitness;
                 p.gene.UsedFuel = usedFuel;
                 SumFitness += fitness;
