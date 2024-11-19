@@ -14,8 +14,8 @@ public class SatelliteController : MonoBehaviour
     void Start()
     {
         earthMass = earth.transform.GetComponent<EarthAgent>().mass;
-        satelliteMass = GetComponent<SatelliteAgent>().mass;
         satelliteAgent = GetComponent<SatelliteAgent>();
+        satelliteMass = satelliteAgent.SatelliteRb.mass;
         thrusters = GetComponentsInChildren<Thruster>();
     }
 
@@ -46,15 +46,21 @@ public class SatelliteController : MonoBehaviour
     // スラスタの推力を適用
     public void ApplyThrust(int thrustState)
     {
+        // 燃料がない場合にはスラスタを噴射しない
+        if (satelliteAgent.SatelliteRb.mass <= satelliteAgent.InitialMass * 0.8f) return;
+
         for (int i = 0; i < thrusters.Length; i++)
         {
             if ((thrustState & (1 << i)) != 0)
             {
-                thrusters[i].ApplyForce(GetComponent<Rigidbody>());
-                // スラスタ1個噴くごとに燃料を消費
-                satelliteAgent.CurrentMass -= thrusters[i].fuelConsumption;  // 衛星の質量を更新
-                satelliteAgent.AddUsedFuel(thrusters[i].fuelConsumption);  // 使用燃料を更新
-                satelliteAgent.AddFitness(-thrusters[i].fuelConsumption);  // 適応度を更新 *適応度は最大化したいため、燃料消費量のマイナスを加算することに注意
+                if (satelliteAgent.SatelliteRb.mass <= thrusters[i].fuelConsumption) continue;
+                else {
+                    thrusters[i].ApplyForce(GetComponent<Rigidbody>());
+                    // スラスタ1個噴くごとに燃料を消費
+                    satelliteAgent.SatelliteRb.mass -= thrusters[i].fuelConsumption;  // 衛星の質量を更新
+                    satelliteAgent.AddUsedFuel(thrusters[i].fuelConsumption);  // 使用燃料を更新
+                    satelliteAgent.AddFitness(-thrusters[i].fuelConsumption);  // 適応度を更新 *適応度は最大化したいため、燃料消費量のマイナスを加算することに注意
+                }
             }
         }
         Debug.Log("Applied thrust: " + thrustState);

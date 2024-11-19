@@ -10,11 +10,10 @@ public class SatelliteAgent : Agent
     private SatelliteController Controller { get; set; }
     private Vector3 StartPosition { get; set; }
     private Vector3 StartVelocity { get; set; }
-    private Rigidbody SatelliteRb { get; set; }
-    public float mass { get; set; }  // 衛星の質量 (kg)
+    public Rigidbody SatelliteRb { get; set; }
+    public float InitialMass { get; set; }  // 衛星の質量 (kg)
     public float InitialVelocity { get; set; } // 初期速度 (km/s)
-    [SerializeField] public float CurrentHeight { get; private set; }  // 現在の高度 (km)
-    public float CurrentMass { get; set; }  // 現在の質量 (kg)
+    [SerializeField] private float CurrentHeight;  // 現在の高度 (km)
     public float MaxHealth { get; set; }  // エージェントの最大体力
     [SerializeField] private float Health;  // エージェントの体力
     public bool IsGravitated { get; set; }  // 万有引力を適用するかどうか
@@ -29,18 +28,19 @@ public class SatelliteAgent : Agent
     void Start()
     {
         StartPosition = new Vector3(12756.0f / 2.0f + 1000f, 0, 0);  // 地球の半径 + 衛星の高度 (km)
-        mass = 100f;
+        InitialMass = 100f;
         InitialVelocity = 7.350103183f;
         StartVelocity = new Vector3(0, InitialVelocity, 0);
-        MaxHealth = 1e3f;
+        MaxHealth = 1e2f;
         Health = MaxHealth;
+        CurrentHeight = GetCurrentHeight();
         SatelliteRb.useGravity = false;
         IsGravitated = true;
 
         // 衛星の初期位置を設定
         transform.position = new Vector3(12756.0f / 2.0f + 1000f, 0, 0);
         // 衛星の質量、初速、重力を設定
-        SatelliteRb.mass = mass;
+        SatelliteRb.mass = InitialMass;
         SatelliteRb.linearVelocity = StartVelocity;
 
         // ディレクトリがない場合は作成
@@ -79,10 +79,9 @@ public class SatelliteAgent : Agent
     public override void AgentReset()
     {
         transform.position = StartPosition;
-        SatelliteRb.mass = mass;
+        SatelliteRb.mass = InitialMass;
         SatelliteRb.linearVelocity = StartVelocity;
         CurrentHeight = GetCurrentHeight();
-        CurrentMass = SatelliteRb.mass;
         IsGravitated = true;
 
         SetFitness(0);
@@ -150,8 +149,6 @@ public class SatelliteAgent : Agent
         {
             int thrustState = GeneData[tiltSegment];  // 0~15の値
             ApplyThrust(thrustState);
-            // 質量を更新
-            SatelliteRb.mass = CurrentMass;
             Debug.Log($"Fitness: {Fitness}, UsedFuel: {UsedFuel}");
         }
         else

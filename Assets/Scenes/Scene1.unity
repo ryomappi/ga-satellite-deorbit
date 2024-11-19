@@ -198,7 +198,7 @@ MonoBehaviour:
   totalPopulation: 200
   tournamentSelection: 85
   eliteSelection: 4
-  nAgents: 1
+  nAgents: 4
   GObjectAgent: {fileID: 1800785213}
   textDisplay: {fileID: 735091081}
   Operator: {fileID: 11400000, guid: 50d3379d08e7646afb815ebd54fd489c, type: 2}
@@ -270,7 +270,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 391882651747153541, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
       propertyPath: Health
-      value: 10
+      value: 1e+10
       objectReference: {fileID: 0}
     - target: {fileID: 391882651747153541, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
       propertyPath: initialVelocity
