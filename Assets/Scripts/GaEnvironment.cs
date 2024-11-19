@@ -114,8 +114,6 @@ public class GaEnvironment : MonoBehaviour
                 float usedFuel = p.agent.UsedFuel;
                 BestRecord = Math.Max(CalcRecord(p), BestRecord);  // 小さいほど良い
                 GenBestRecord = Math.Max(CalcRecord(p), GenBestRecord);  // 小さいほど良い
-                Debug.Log($"Fitness: {fitness}, UsedFuel: {usedFuel}");
-                Debug.Log($"BestRecord: {BestRecord}, GenBestRecord: {GenBestRecord}");
                 p.gene.Fitness = fitness;  // 遺伝子に適応度を反映
                 p.gene.UsedFuel = usedFuel;  // 遺伝子に使用燃料を反映
                 SumFitness += fitness;
@@ -127,12 +125,10 @@ public class GaEnvironment : MonoBehaviour
         if (CurrentGenes.Count == 0 && AgentsSet.Count == 0)  // 一世代の全ての個体がタスクを終了したら
         {
             SetNextGeneration();
-            Debug.Log("Next Generation");
         }
         else
         {
             SetNextAgents();
-            Debug.Log("Next Agents");
         }
     }
 
@@ -163,7 +159,7 @@ public class GaEnvironment : MonoBehaviour
         GenPopulation();
         SumFitness = 0;
         SumUsedFuel = 0;
-        GenBestRecord = 1e5f;  // 小さいほど良いため、大きい値で初期化する必要がある
+        GenBestRecord = -100;
         Agents.ForEach(a => a.Reset());
         SetStartAgents();
         UpdateText();

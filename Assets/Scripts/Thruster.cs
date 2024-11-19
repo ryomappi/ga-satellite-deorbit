@@ -14,6 +14,5 @@ public class Thruster : MonoBehaviour
     public void ApplyForce(Rigidbody rb)
     {
         rb.AddForce(direction * force, ForceMode.Force);
-        Debug.Log($"Thrust {name}: {force}");
     }
 }

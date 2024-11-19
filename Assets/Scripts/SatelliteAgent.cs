@@ -110,9 +110,6 @@ public class SatelliteAgent : Agent
         float tiltY = Vector3.Dot(satelliteUp, Vector3.up);     // Y軸方向の傾き
         float tiltZ = Vector3.Dot(satelliteUp, Vector3.forward);// Z軸方向の傾き
 
-        // デバッグ出力
-        Debug.Log($"Satellite Tilt - X: {tiltX}, Y: {tiltY}, Z: {tiltZ}");
-
         // 傾きをベクトルとして返す
         return new Vector3(tiltX, tiltY, tiltZ);
     }
@@ -127,7 +124,6 @@ public class SatelliteAgent : Agent
         float tiltZAngle = Mathf.Atan2(tilt.z, tilt.x) * Mathf.Rad2Deg;
         int segment = (int)((tiltZAngle + 360) % 360 / 11.25f);
 
-        Debug.Log($"Tilt Segment: {segment}");
         return segment;
     }
 
@@ -151,7 +147,6 @@ public class SatelliteAgent : Agent
         {
             int thrustState = GeneData[tiltSegment];  // 0~15の値
             ApplyThrust(thrustState);
-            Debug.Log($"Fitness: {Fitness}, UsedFuel: {UsedFuel}");
         }
         else
         {
@@ -184,7 +179,7 @@ public class SatelliteAgent : Agent
         {
             Controller.Stop();
             Done();
-            AddFitness(InitialHeight - CurrentHeight);
+            // AddFitness(InitialHeight - CurrentHeight);
             return;
         }
     }
@@ -193,6 +188,5 @@ public class SatelliteAgent : Agent
     public override void ApplyGene(Gene gene)
     {
         GeneData = gene.data;  // 0~15の値が32個並んだリスト (各傾き角度時のスラスタの状態に対応)
-        Debug.Log($"GeneData.Count: {GeneData.Count}");
     }
 }

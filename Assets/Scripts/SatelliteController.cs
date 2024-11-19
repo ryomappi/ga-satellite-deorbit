@@ -34,12 +34,10 @@ public class SatelliteController : MonoBehaviour
         // 地球を中心とした円運動をシミュレーション
         Vector3 directionToEarth = (earth.transform.position - transform.position).normalized;
         float distance = Vector3.Distance(transform.position, earth.transform.position);
-        Debug.Log("distance: " + distance);
 
         // 万有引力の計算
         float forceMagnitude = gravitationalConstant * (earthMass * satelliteMass) / (distance * distance);
         Vector3 force = directionToEarth * forceMagnitude;
-        Debug.Log("force: " + force.magnitude);
         GetComponent<Rigidbody>().AddForce(force, ForceMode.Force);
     }
 
@@ -63,6 +61,5 @@ public class SatelliteController : MonoBehaviour
                 }
             }
         }
-        Debug.Log("Applied thrust: " + thrustState);
     }
 }
