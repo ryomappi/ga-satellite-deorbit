@@ -76,6 +76,28 @@ public class GaEnvironment : MonoBehaviour
         }
     }
 
+    private float CalcRecord(AgentPair p)
+    {
+        /* 点数計算方式
+            100点満点方式 (ただし負の点数を取りうる)
+
+            高度
+            - 500kmまでさげられていたら100点
+            - それ以外は0点
+            使用燃料
+            - 使用した分だけ減点
+        */
+
+        float record = 0f;
+        if (p.agent.Succeeded)
+        {
+            record += 100f;
+        }
+        record -= p.agent.UsedFuel;
+
+        return record;
+    }
+
     // 生きているAgentを更新する
     void FixedUpdate()
     {
@@ -90,8 +112,8 @@ public class GaEnvironment : MonoBehaviour
             {
                 float fitness = p.agent.Fitness;
                 float usedFuel = p.agent.UsedFuel;
-                BestRecord = Math.Min(usedFuel, BestRecord);  // 小さいほど良い
-                GenBestRecord = Math.Min(usedFuel, GenBestRecord);  // 小さいほど良い
+                BestRecord = Math.Max(CalcRecord(p), BestRecord);  // 小さいほど良い
+                GenBestRecord = Math.Max(CalcRecord(p), GenBestRecord);  // 小さいほど良い
                 Debug.Log($"Fitness: {fitness}, UsedFuel: {usedFuel}");
                 Debug.Log($"BestRecord: {BestRecord}, GenBestRecord: {GenBestRecord}");
                 p.gene.Fitness = fitness;  // 遺伝子に適応度を反映
@@ -209,7 +231,8 @@ public class GaEnvironment : MonoBehaviour
         public Gene gene;
     }
 
-    private void WriteRecord() {
+    private void WriteRecord()
+    {
         StreamWriter file = new StreamWriter(@"test/record.csv", true, Encoding.UTF8);
         file.WriteLine(string.Format("{0},{1},{2},{3}", Generation, BestRecord, GenBestRecord, AvgFitness));
         file.Close();

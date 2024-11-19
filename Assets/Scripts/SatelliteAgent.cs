@@ -33,7 +33,7 @@ public class SatelliteAgent : Agent
         InitialMass = 100f;
         InitialVelocity = 7.350103183f;
         StartVelocity = new Vector3(0, InitialVelocity, 0);
-        MaxHealth = 1e2f;
+        MaxHealth = 10f;
         Health = MaxHealth;
         CurrentHeight = GetCurrentHeight();
         SatelliteRb.useGravity = false;
@@ -173,6 +173,7 @@ public class SatelliteAgent : Agent
         {
             Controller.Stop();
             Done();
+            Succeed();
             // 降下した高度をfitnessとして報酬とする
             AddFitness(InitialHeight - CurrentHeight);
             return;
