@@ -166,10 +166,10 @@ public class SatelliteAgent : Agent
         // タスク達成時に終了処理
         if (CurrentHeight < 500)  // 目標高度: 500km
         {
-            Controller.Stop();
+            Stop();
             Done();
             Succeed();
-            // 降下した高度をfitnessとして報酬とする
+            // 降下した高度を適応度として与える
             AddFitness(InitialHeight - CurrentHeight);
             return;
         }
@@ -177,9 +177,10 @@ public class SatelliteAgent : Agent
         // エージェントの体力が0になったら終了
         if (Health <= 0)
         {
-            Controller.Stop();
+            Stop();
             Done();
-            // AddFitness(InitialHeight - CurrentHeight);
+            // 降下した高度を適応度として与える
+            AddFitness(InitialHeight - CurrentHeight);
             return;
         }
     }

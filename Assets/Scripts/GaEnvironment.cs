@@ -4,7 +4,9 @@ using System;
 using System.IO;
 using System.Text;
 using System.Linq;
-using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class GaEnvironment : MonoBehaviour
 {
@@ -16,6 +18,8 @@ public class GaEnvironment : MonoBehaviour
     private int EliteSelection { get { return eliteSelection; } }
     [SerializeField][Range(1, 300)] private int nAgents = 4;  // エージェントの数
     private int NAgents { get { return nAgents; } }
+    [SerializeField][Range(1, 300)] private int nGeneration = 10;
+    private int NGeneration { get { return nGeneration; } }
     [Header("Agent Prefab"), SerializeField] public GameObject GObjectAgent = null;
     [Header("UI References"), SerializeField] private PopulationTextDisplay textDisplay = null;
     private PopulationTextDisplay TextDisplay { get { return textDisplay; } }
@@ -32,6 +36,9 @@ public class GaEnvironment : MonoBehaviour
     private List<AgentPair> AgentsSet = new List<AgentPair>();  // 生成したエージェントと遺伝子のペアを格納するリスト
     private Queue<Gene> CurrentGenes;  // 現在の遺伝子を格納するキュー
     [Header("Gene"), SerializeField] private GeneOperator Operator = null;  // 遺伝子操作を行うオペレーター
+
+    private float GenMaxFitness { get; set; }
+    private Gene BestGene = new Gene();
 
     void Awake()
     {
@@ -101,6 +108,19 @@ public class GaEnvironment : MonoBehaviour
     // 生きているAgentを更新する
     void FixedUpdate()
     {
+        // NGeneration世代目まで終了したら終了
+        if (Generation >= NGeneration)
+        {
+            Debug.Log("Finish");
+            WriteBestGene();
+#if UNITY_EDITOR
+            EditorApplication.isPlaying = false;  // エディタの再生を停止
+#else
+                Application.Quit();  // アプリケーションを終了
+#endif
+            return;
+        }
+
         foreach (var pair in AgentsSet.Where(p => !p.agent.IsDone))  // IsDoneがfalseのAgentのみ更新
         {
             pair.agent.AgentUpdate();
@@ -112,8 +132,12 @@ public class GaEnvironment : MonoBehaviour
             {
                 float fitness = p.agent.Fitness;
                 float usedFuel = p.agent.UsedFuel;
-                BestRecord = Math.Max(CalcRecord(p), BestRecord);  // 小さいほど良い
-                GenBestRecord = Math.Max(CalcRecord(p), GenBestRecord);  // 小さいほど良い
+                // Debug.Log($"Generation {Generation} => Fitness: {fitness}, UsedFuel: {usedFuel}");
+                GenMaxFitness = Mathf.Max(fitness, GenMaxFitness);
+                if (CalcRecord(p) > BestRecord) BestGene = p.gene;
+
+                BestRecord = Mathf.Max(CalcRecord(p), BestRecord);
+                GenBestRecord = Mathf.Max(CalcRecord(p), GenBestRecord);
                 p.gene.Fitness = fitness;  // 遺伝子に適応度を反映
                 p.gene.UsedFuel = usedFuel;  // 遺伝子に使用燃料を反映
                 SumFitness += fitness;
@@ -124,6 +148,7 @@ public class GaEnvironment : MonoBehaviour
 
         if (CurrentGenes.Count == 0 && AgentsSet.Count == 0)  // 一世代の全ての個体がタスクを終了したら
         {
+            Debug.Log($"Generation {Generation + 1} Max Fitness: {GenMaxFitness}");
             SetNextGeneration();
         }
         else
@@ -157,6 +182,7 @@ public class GaEnvironment : MonoBehaviour
         // 新しい世代
         // 新世代の生成と評価値などの初期化を行う
         GenPopulation();
+        GenMaxFitness = -100;
         SumFitness = 0;
         SumUsedFuel = 0;
         GenBestRecord = -100;
@@ -180,16 +206,24 @@ public class GaEnvironment : MonoBehaviour
         var bestGenes = Genes.ToList();
         // Elite Selection
         bestGenes.Sort(CompareGenes);
+
         for (int i = 0; i < EliteSelection; i++)
         {
+            Debug.Log($"Elite {i + 1}: {bestGenes[i].Fitness}");  // bestGenesの上位EliteSelection個のFitnessを表示
             children.Add(Operator.Clone(bestGenes[i]));  // エリートな遺伝子はそのまま次世代に引き継ぐ
         }
+        // childrenにはエリート選択で選ばれた遺伝子が入っていることを確認
+        for (int i = 0; i < children.Count; i++)
+        {
+            Debug.Assert(bestGenes[i].data.SequenceEqual(children[i].data), $"Gene data mismatch at index {i}");
+        }
+
         float mutate_only = 0.3f;
 
         // トーナメント選択 + 突然変異
         while (children.Count < TotalPopulation * mutate_only)
         {
-            var tournamentMembers = Genes.AsEnumerable().OrderBy(x => Guid.NewGuid()).Take(tournamentSelection).ToList();
+            var tournamentMembers = Genes.AsEnumerable().OrderBy(x => Guid.NewGuid()).Take(TournamentSelection).ToList();
             tournamentMembers.Sort(CompareGenes);
             children.Add(Operator.Mutate(tournamentMembers[0], Generation));
             if (children.Count < TotalPopulation * mutate_only) children.Add(Operator.Mutate(tournamentMembers[1], Generation));
@@ -231,6 +265,16 @@ public class GaEnvironment : MonoBehaviour
     {
         StreamWriter file = new StreamWriter(@"test/record.csv", true, Encoding.UTF8);
         file.WriteLine(string.Format("{0},{1},{2},{3}", Generation, BestRecord, GenBestRecord, AvgFitness));
+        file.Close();
+    }
+
+    private void WriteBestGene()
+    {
+        StreamWriter file = new StreamWriter(@"test/best_gene.txt", false, Encoding.UTF8);
+        foreach (var value in BestGene.data)
+        {
+            file.WriteLine(value);
+        }
         file.Close();
     }
 }

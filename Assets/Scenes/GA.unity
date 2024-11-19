@@ -197,8 +197,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalPopulation: 200
   tournamentSelection: 85
-  eliteSelection: 4
+  eliteSelection: 10
   nAgents: 4
+  nGeneration: 1
   GObjectAgent: {fileID: 1800785213}
   textDisplay: {fileID: 735091081}
   Operator: {fileID: 11400000, guid: 50d3379d08e7646afb815ebd54fd489c, type: 2}
