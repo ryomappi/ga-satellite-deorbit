@@ -43,10 +43,20 @@ public class SatelliteAgent : Agent
         SatelliteRb.mass = mass;
         SatelliteRb.linearVelocity = StartVelocity;
 
-        StreamWriter file = new StreamWriter(@"test/record.csv", false, Encoding.UTF8);
-        file.WriteLine(string.Format("{0},{1},{2},{3}", "Generation", "Best Record", "Best this gen", "Average"));
-        Console.WriteLine("ファイルの作成");
-        file.Close();
+        // ディレクトリがない場合は作成
+        string directoryPath = @"test";
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        // ファイルの作成
+        string filePath = Path.Combine(directoryPath, "record.csv");
+        using (StreamWriter file = new StreamWriter(filePath, false, Encoding.UTF8))
+        {
+            file.WriteLine(string.Format("{0},{1},{2},{3}", "Generation", "Best Record", "Best this gen", "Average"));
+            Console.WriteLine("ファイルの作成");
+        }
 
         GameObject now_env = GameObject.Find("Environment");
         ga = now_env.GetComponent<GaEnvironment>();
@@ -59,6 +69,10 @@ public class SatelliteAgent : Agent
     public override void Gravitate()
     {
         Controller.Gravitate();
+    }
+    public override void ApplyThrust(int thrustState)
+    {
+        Controller.ApplyThrust(thrustState);
     }
 
     // 新しい個体の初期化
@@ -111,8 +125,15 @@ public class SatelliteAgent : Agent
 
         // 衛星の角度に応じてスラスタを制御 + 質量・使用燃料を更新 + 適応度・使用燃料を更新
         int angleSegment = GetAngleSegment();
-        int thrustState = GeneData[angleSegment];  // 0~15の値
-        Controller.ApplyThrust(thrustState);
+        if (angleSegment >= 0 && angleSegment < GeneData.Count)
+        {
+            int thrustState = GeneData[angleSegment];  // 0~15の値
+            ApplyThrust(thrustState);
+        }
+        else
+        {
+            Debug.LogError("Angle segment out of range: " + angleSegment);
+        }
 
         // 衛星の高度を更新
         float prevHeight = CurrentHeight;

@@ -17,8 +17,8 @@ public class GaEnvironment : MonoBehaviour
     [SerializeField][Range(1, 300)] private int nAgents = 4;  // エージェントの数
     private int NAgents { get { return nAgents; } }
     [Header("Agent Prefab"), SerializeField] public GameObject GObjectAgent = null;
-    [Header("UI References"), SerializeField] private Text populationText = null;
-    private Text PopulationText { get { return populationText; } }
+    [Header("UI References"), SerializeField] private PopulationTextDisplay populationTextDisplay = null;
+    private PopulationTextDisplay TextDisplay { get { return populationTextDisplay; } }
     private float GenBestRecord { get; set; }  // 世代の最大適応度
     private float SumFitness { get; set; }  // 一世代の適応度の合計
     private float AvgFitness { get; set; }  // 一世代の適応度の平均
@@ -52,6 +52,7 @@ public class GaEnvironment : MonoBehaviour
     void Start()
     {
         SetStartAgents();
+        UpdateText();
     }
 
     // Agent,Geneを組としてAgentsSetにいれる
@@ -174,7 +175,7 @@ public class GaEnvironment : MonoBehaviour
             if (children.Count < TotalPopulation * mutate_only) children.Add(Operator.Mutate(tournamentMembers[1], Generation));
         }
 
-        // トーナメント選択 + (交叉,　BLX-α (ブレンド交叉))
+        // トーナメント選択 + 交叉
         while (children.Count < TotalPopulation)
         {
             var tournamentMembers = Genes.AsEnumerable().OrderBy(x => Guid.NewGuid()).Take(tournamentSelection).ToList();
@@ -191,12 +192,14 @@ public class GaEnvironment : MonoBehaviour
 
     private void UpdateText()
     {
-        PopulationText.text = "Population: " + (TotalPopulation - CurrentGenes.Count) + "/" + TotalPopulation
-            + "\nGeneration: " + (Generation + 1)
-            + "\nBest Record: " + BestRecord
-            + "\nBest this gen: " + GenBestRecord
-            + "\nAverage: " + AvgUsedFuel;
-        Debug.Log(PopulationText.text);
+        if (TextDisplay != null)
+        {
+            TextDisplay.UpdateText(TotalPopulation, TotalPopulation - CurrentGenes.Count, Generation, BestRecord, GenBestRecord, AvgUsedFuel);
+        }
+        else
+        {
+            Debug.LogError("TextDisplay is not assigned.");
+        }
     }
     private struct AgentPair
     {

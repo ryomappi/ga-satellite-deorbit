@@ -57,5 +57,6 @@ public class SatelliteController : MonoBehaviour
                 satelliteAgent.AddFitness(-thrusters[i].fuelConsumption);  // 適応度を更新 *適応度は最大化したいため、燃料消費量のマイナスを加算することに注意
             }
         }
+        Debug.Log("Applied thrust: " + thrustState);
     }
 }

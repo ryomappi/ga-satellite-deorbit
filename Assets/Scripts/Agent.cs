@@ -30,6 +30,7 @@ public abstract class Agent : MonoBehaviour
     public abstract void ApplyGene(Gene gene);
     public abstract void Stop();
     public abstract void Gravitate();
+    public abstract void ApplyThrust(int thrustState);
     public void Done()
     {
         IsDone = true;
