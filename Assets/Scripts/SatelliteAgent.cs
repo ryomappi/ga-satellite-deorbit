@@ -19,7 +19,6 @@ public class SatelliteAgent : Agent
     [SerializeField] private float Health;  // エージェントの体力
     public bool IsGravitated { get; set; }  // 万有引力を適用するかどうか
     public List<int> GeneData { get; set; }  // 遺伝子データ
-    private GaEnvironment ga;
 
     void Awake()
     {
@@ -59,9 +58,6 @@ public class SatelliteAgent : Agent
             file.WriteLine(string.Format("{0},{1},{2},{3}", "Generation", "Best Record", "Best this gen", "Average"));
             Console.WriteLine("ファイルの作成");
         }
-
-        GameObject now_env = GameObject.Find("Environment");
-        ga = now_env.GetComponent<GaEnvironment>();
     }
 
     public override void Stop()

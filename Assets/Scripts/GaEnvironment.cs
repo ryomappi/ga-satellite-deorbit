@@ -116,7 +116,7 @@ public class GaEnvironment : MonoBehaviour
 #if UNITY_EDITOR
             EditorApplication.isPlaying = false;  // エディタの再生を停止
 #else
-                Application.Quit();  // アプリケーションを終了
+            Application.Quit();  // アプリケーションを終了
 #endif
             return;
         }
