@@ -90,8 +90,8 @@ public class GaEnvironment : MonoBehaviour
             {
                 float fitness = p.agent.Fitness;
                 float usedFuel = p.agent.UsedFuel;
-                BestRecord = Math.Min(usedFuel, BestRecord);
-                GenBestRecord = Math.Min(usedFuel, GenBestRecord);
+                BestRecord = Math.Min(usedFuel, BestRecord);  // 小さいほど良い
+                GenBestRecord = Math.Min(usedFuel, GenBestRecord);  // 小さいほど良い
                 Debug.Log($"Fitness: {fitness}, UsedFuel: {usedFuel}");
                 Debug.Log($"BestRecord: {BestRecord}, GenBestRecord: {GenBestRecord}");
                 p.gene.Fitness = fitness;
@@ -141,7 +141,7 @@ public class GaEnvironment : MonoBehaviour
         GenPopulation();
         SumFitness = 0;
         SumUsedFuel = 0;
-        GenBestRecord = 0;
+        GenBestRecord = 1e5f;  // 小さいほど良いため、大きい値で初期化する必要がある
         Agents.ForEach(a => a.Reset());
         SetStartAgents();
         UpdateText();
