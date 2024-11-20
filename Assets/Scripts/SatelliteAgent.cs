@@ -81,6 +81,7 @@ public class SatelliteAgent : Agent
         SatelliteRb.linearVelocity = StartVelocity;
         CurrentHeight = GetCurrentHeight();
         IsGravitated = true;
+        Health = MaxHealth;
 
         SetFitness(0);
         SetUsedFuel(0);
@@ -156,7 +157,7 @@ public class SatelliteAgent : Agent
         // 高度が減少しない場合、エージェントの体力を減少させる
         if (Health > 0 && CurrentHeight >= prevHeight)
         {
-            Health -= 1;
+            Health -= 0.0001f;
         }
 
         // タスク達成時に終了処理
@@ -166,7 +167,7 @@ public class SatelliteAgent : Agent
             Done();
             Succeed();
             // 降下した高度を適応度として与える
-            AddFitness(InitialHeight - CurrentHeight);
+            AddFitness(InitialHeight - CurrentHeight); // ここは必ず500になってしまいそう?
             return;
         }
 
