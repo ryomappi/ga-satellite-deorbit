@@ -195,11 +195,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68276753095e84193973a08044b5ee42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalPopulation: 30
+  totalPopulation: 200
   tournamentSelection: 85
   eliteSelection: 10
   nAgents: 4
-  nGeneration: 300
+  nGeneration: 1
   GObjectAgent: {fileID: 1800785213}
   textDisplay: {fileID: 735091081}
   Operator: {fileID: 11400000, guid: 50d3379d08e7646afb815ebd54fd489c, type: 2}
@@ -375,7 +375,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5899225072508332355, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
       propertyPath: m_Mass
-      value: 500
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5899225072508332355, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
       propertyPath: m_Constraints
