@@ -59,17 +59,38 @@ public class SatelliteAgent : Agent
         }
 
         // ファイルの作成
-        string filePath = Path.Combine(directoryPath, "record.csv");
+        string filePath = GetUniqueFilePath(directoryPath, "record", "csv");
         using (StreamWriter file = new StreamWriter(filePath, false, Encoding.UTF8))
         {
             file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", "Generation", "Best Record", "Best this gen", "Succeeded Agents", "Average Fitness", "Average Used Fuel", "Average Used Time", "Top 10 Average Used Fuel", "Top 10 Average Used Time"));
-            Console.WriteLine("ファイルの作成");
+            Console.WriteLine("ファイルの作成" + filePath);
+        }
+
+        // メタ情報ファイルの作成
+        string metaFilePath = GetUniqueFilePath(directoryPath, "meta", "csv");
+        using (StreamWriter metaFile = new StreamWriter(metaFilePath, false, Encoding.UTF8))
+        {
+            metaFile.WriteLine("TotalPopulation,TournamentSelection,EliteSelection,NGeneration");
+            metaFile.WriteLine(string.Format("{0},{1},{2},{3}", ga.TotalPopulation, ga.TournamentSelection, ga.EliteSelection, ga.NGeneration));
+            Console.WriteLine("メタ情報ファイルの作成" + metaFilePath);
         }
 
         // Environmentの読み込み
         GameObject now_env = GameObject.Find("Environment");
         if (now_env != null) ga = now_env.GetComponent<GaEnvironment>();
         else Debug.LogError("Environment is not found");
+    }
+
+    private string GetUniqueFilePath(string directoryPath, string baseFileName, string extension)
+    {
+        int fileIndex = 1;
+        string filePath;
+        do
+        {
+            filePath = Path.Combine(directoryPath, $"{baseFileName}_{fileIndex}.{extension}");
+            fileIndex++;
+        } while (File.Exists(filePath));
+        return filePath;
     }
 
     public override void Stop()

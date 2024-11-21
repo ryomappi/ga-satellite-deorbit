@@ -11,15 +11,15 @@ using UnityEditor;
 public class GaEnvironment : MonoBehaviour
 {
     [Header("Settings"), SerializeField] private int totalPopulation = 200;  // 衛星エージェントの個体数
-    private int TotalPopulation { get { return totalPopulation; } }
+    public int TotalPopulation { get { return totalPopulation; } }
     [SerializeField] private int tournamentSelection = 85;  // トーナメント選択の選択数
-    private int TournamentSelection { get { return tournamentSelection; } }
+    public int TournamentSelection { get { return tournamentSelection; } }
     [SerializeField] private int eliteSelection = 4;  // エリート選択の選択数
-    private int EliteSelection { get { return eliteSelection; } }
+    public int EliteSelection { get { return eliteSelection; } }
     [SerializeField][Range(1, 300)] private int nAgents = 4;  // エージェントの数
     private int NAgents { get { return nAgents; } }
     [SerializeField][Range(1, 300)] private int nGeneration = 10;
-    private int NGeneration { get { return nGeneration; } }
+    public int NGeneration { get { return nGeneration; } }
     [SerializeField] public float targetHeight = 500f;  // 目標高度
     [Header("Agent Prefab"), SerializeField] public GameObject GObjectAgent = null;
     [Header("UI References"), SerializeField] private PopulationTextDisplay textDisplay = null;
