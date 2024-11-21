@@ -261,10 +261,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2333394540325272971, guid: cfa75cdf5a3f9466fb77f751cb6cb399, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 391882651747153541, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
       propertyPath: mass
       value: 100
@@ -377,6 +373,18 @@ PrefabInstance:
       propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5899225072508332355, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
+      propertyPath: m_Mass
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5899225072508332355, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
+      propertyPath: m_Constraints
+      value: 48
+      objectReference: {fileID: 0}
+    - target: {fileID: 5899225072508332355, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
+      propertyPath: m_ImplicitTensor
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6563762767754551608, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -393,6 +401,10 @@ PrefabInstance:
       propertyPath: earth
       value: 
       objectReference: {fileID: 254780045}
+    - target: {fileID: 2333394540325272971, guid: cfa75cdf5a3f9466fb77f751cb6cb399, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6862742682098136116, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
     m_RemovedGameObjects: []
@@ -417,6 +429,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2333394540325272971, guid: cfa75cdf5a3f9466fb77f751cb6cb399, type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5659941181111567877, guid: cfa75cdf5a3f9466fb77f751cb6cb399, type: 3}
+      propertyPath: rotationSpeed
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6761329742436702540, guid: cfa75cdf5a3f9466fb77f751cb6cb399, type: 3}
