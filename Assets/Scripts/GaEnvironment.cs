@@ -31,6 +31,8 @@ public class GaEnvironment : MonoBehaviour
     private float AvgUsedFuel { get; set; }  // 一世代の使用燃料の平均
     private float SumUsedTime { get; set; }  // 一世代の使用時間の合計
     private float AvgUsedTime { get; set; }  // 一世代の使用時間の平均
+    private float Top10AvgUsedFuel { get; set; }  // 上位10%の使用燃料の平均
+    private float Top10AvgUsedTime { get; set; }  // 上位10%の使用時間の平均
     private int SucceededAgents { get; set; }  // タスクを完了したエージェントの数
     private List<GameObject> GObjects = new List<GameObject>();  // 生成したゲームオブジェクトを格納するリスト
     private List<Agent> Agents = new List<Agent>();  // 生成したエージェントを格納するリスト <- エージェントの基本的な操作ができる
@@ -174,6 +176,12 @@ public class GaEnvironment : MonoBehaviour
         AvgFitness = SumFitness / TotalPopulation;
         AvgUsedFuel = SumUsedFuel / TotalPopulation;
         AvgUsedTime = SumUsedTime / TotalPopulation;
+
+        // Top10の遺伝子の使用燃料と使用時間の平均を計算
+        var top10Genes = Genes.OrderByDescending(g => g.Fitness).Take(10).ToList();
+        Top10AvgUsedFuel = top10Genes.Average(g => g.UsedFuel);
+        Top10AvgUsedTime = top10Genes.Average(g => g.UsedTime);
+
         // 新しい世代
         // 新世代の生成と評価値などの初期化を行う
         GenPopulation();
@@ -239,7 +247,7 @@ public class GaEnvironment : MonoBehaviour
     {
         if (TextDisplay != null)
         {
-            TextDisplay.UpdateText(TotalPopulation, TotalPopulation - CurrentGenes.Count, Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime);
+            TextDisplay.UpdateText(TotalPopulation, TotalPopulation - CurrentGenes.Count, Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime, Top10AvgUsedFuel, Top10AvgUsedTime);
         }
         else
         {
@@ -255,7 +263,7 @@ public class GaEnvironment : MonoBehaviour
     private void WriteRecord()
     {
         StreamWriter file = new StreamWriter(@"test/record.csv", true, Encoding.UTF8);
-        file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6}", Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime));
+        file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime, Top10AvgUsedFuel, Top10AvgUsedTime));
         file.Close();
     }
 

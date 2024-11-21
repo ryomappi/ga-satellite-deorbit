@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using System.Text;
-using NUnit.Framework;
 
 public class SatelliteAgent : Agent
 {
@@ -23,11 +22,13 @@ public class SatelliteAgent : Agent
     public bool IsGravitated { get; set; }  // 万有引力を適用するかどうか
     public List<int> GeneData { get; set; }  // 遺伝子データ
     private GaEnvironment ga;
+    private TrailRenderer TrailRenderer;
 
     void Awake()
     {
         Controller = GetComponent<SatelliteController>();
         SatelliteRb = GetComponent<Rigidbody>();
+        TrailRenderer = GetComponent<TrailRenderer>();
     }
     void Start()
     {
@@ -61,13 +62,14 @@ public class SatelliteAgent : Agent
         string filePath = Path.Combine(directoryPath, "record.csv");
         using (StreamWriter file = new StreamWriter(filePath, false, Encoding.UTF8))
         {
-            file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6}", "Generation", "Best Record", "Best this gen", "Succeeded Agents", "Average Fitness", "Average Used Fuel", "Average Used Time"));
+            file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", "Generation", "Best Record", "Best this gen", "Succeeded Agents", "Average Fitness", "Average Used Fuel", "Average Used Time", "Top 10 Average Used Fuel", "Top 10 Average Used Time"));
             Console.WriteLine("ファイルの作成");
         }
 
         // Environmentの読み込み
         GameObject now_env = GameObject.Find("Environment");
-        ga = now_env.GetComponent<GaEnvironment>();
+        if (now_env != null) ga = now_env.GetComponent<GaEnvironment>();
+        else Debug.LogError("Environment is not found");
     }
 
     public override void Stop()
@@ -94,6 +96,12 @@ public class SatelliteAgent : Agent
         Health = MaxHealth;
         MaxFuel = 20f;
         MaxTime = 1000f;
+
+        // TrailRendererをリセット
+        if (TrailRenderer != null)
+        {
+            TrailRenderer.Clear();
+        }
 
         SetFitness(0);
         SetUsedFuel(0);
@@ -150,8 +158,8 @@ public class SatelliteAgent : Agent
         */
 
         float w1 = 0.5f;
-        float w2 = 0.3f;
-        float w3 = 0.2f;
+        float w2 = 0.5f;
+        float w3 = 1;
         float T_current = UsedTime;
         float T_max = MaxTime;
         float F_current = UsedFuel;

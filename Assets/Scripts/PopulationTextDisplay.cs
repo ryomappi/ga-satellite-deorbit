@@ -11,6 +11,8 @@ public class PopulationTextDisplay : MonoBehaviour
     public float AvgFitness;
     public float AvgUsedFuel;
     public float AvgUsedTime;
+    public float Top10AvgUsedFuel;
+    public float Top10AvgUsedTime;
 
     void OnGUI()
     {
@@ -25,12 +27,14 @@ public class PopulationTextDisplay : MonoBehaviour
                     + "\nSucceeded Agents: " + SucceededAgents
                     + "\nAverage Fitness: " + AvgFitness
                     + "\nAverage Used Fuel: " + AvgUsedFuel
-                    + "\nAverage Used Time: " + AvgUsedTime;
+                    + "\nAverage Used Time: " + AvgUsedTime
+                    + "\nTop 10 Average Used Fuel: " + Top10AvgUsedFuel
+                    + "\nTop 10 Average Used Time: " + Top10AvgUsedTime;
 
         GUI.Label(new Rect(10, 70, 500, 200), text, style);
     }
 
-    public void UpdateText(int totalPopulation, int currentPopulation, int generation, float bestRecord, float genBestRecord, int succeededAgents, float avgFitness, float avgUsedFuel, float avgUsedTime)
+    public void UpdateText(int totalPopulation, int currentPopulation, int generation, float bestRecord, float genBestRecord, int succeededAgents, float avgFitness, float avgUsedFuel, float avgUsedTime, float top10AvgUsedFuel, float top10AvgUsedTime)
     {
         TotalPopulation = totalPopulation;
         CurrentPopulation = currentPopulation;
@@ -41,5 +45,7 @@ public class PopulationTextDisplay : MonoBehaviour
         AvgFitness = avgFitness;
         AvgUsedFuel = avgUsedFuel;
         AvgUsedTime = avgUsedTime;
+        Top10AvgUsedFuel = top10AvgUsedFuel;
+        Top10AvgUsedTime = top10AvgUsedTime;
     }
 }
