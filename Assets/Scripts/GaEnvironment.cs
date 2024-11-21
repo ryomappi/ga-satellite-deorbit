@@ -47,6 +47,7 @@ public class GaEnvironment : MonoBehaviour
     private string MetaFilePath;
     private string BestGenePath;
     private string BestGenesPath;
+    [Header("File Output"), SerializeField] private bool IsConsecutive = false;  // ファイル名に連番を用いるかどうか
 
     void Awake()
     {
@@ -76,7 +77,7 @@ public class GaEnvironment : MonoBehaviour
         }
 
         // ファイルの作成
-        RecordPath = GetUniqueFilePath(directoryPath, "record", "csv");
+        RecordPath = GetUniqueFilePath(directoryPath, "record", "csv", IsConsecutive);
         using (StreamWriter file = new StreamWriter(RecordPath, false, Encoding.UTF8))
         {
             file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", "Generation", "Best Record", "Best this gen", "Succeeded Agents", "Average Fitness", "Average Used Fuel", "Average Used Time", "Top 10 Average Used Fuel", "Top 10 Average Used Time"));
@@ -84,7 +85,7 @@ public class GaEnvironment : MonoBehaviour
         }
 
         // メタ情報ファイルの作成
-        MetaFilePath = GetUniqueFilePath(directoryPath, "meta", "csv");
+        MetaFilePath = GetUniqueFilePath(directoryPath, "meta", "csv", IsConsecutive);
         using (StreamWriter metaFile = new StreamWriter(MetaFilePath, false, Encoding.UTF8))
         {
             SatelliteAgent firstAgent = Agents[0].GetComponent<SatelliteAgent>();
@@ -94,22 +95,30 @@ public class GaEnvironment : MonoBehaviour
         }
 
         // BestGeneファイルのパスを設定
-        BestGenePath = GetUniqueFilePath(directoryPath, "best_gene", "txt");
+        BestGenePath = GetUniqueFilePath(directoryPath, "best_gene", "txt", IsConsecutive);
 
         // BestGenesファイルのパスを設定
-        BestGenesPath = GetUniqueFilePath(directoryPath, "best_genes", "json");
+        BestGenesPath = GetUniqueFilePath(directoryPath, "best_genes", "json", IsConsecutive);
     }
 
-    private string GetUniqueFilePath(string directoryPath, string baseFileName, string extension)
+    private string GetUniqueFilePath(string directoryPath, string baseFileName, string extension, bool isConsecutive)
     {
-        int fileIndex = 1;
-        string filePath;
-        do
+        if (isConsecutive)
         {
-            filePath = Path.Combine(directoryPath, $"{baseFileName}_{fileIndex}.{extension}");
-            fileIndex++;
-        } while (File.Exists(filePath));
-        return filePath;
+            int fileIndex = 1;
+            string filePath;
+            do
+            {
+                filePath = Path.Combine(directoryPath, $"{baseFileName}_{fileIndex}.{extension}");
+                fileIndex++;
+            } while (File.Exists(filePath));
+            return filePath;
+        }
+        else
+        {
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            return Path.Combine(directoryPath, $"{baseFileName}_{timestamp}.{extension}");
+        }
     }
 
     // Agent,Geneを組としてAgentsSetにいれる
