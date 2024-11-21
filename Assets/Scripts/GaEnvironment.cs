@@ -354,7 +354,7 @@ public class GaEnvironment : MonoBehaviour
         }
 
         // 現在の世代の最も優れた遺伝子を追加
-        bestGenesByGeneration[Generation] = BestGene.data;
+        bestGenesByGeneration[Generation + 1] = BestGene.data;
 
         // JSONファイルに書き出す
         string updatedJson = JsonConvert.SerializeObject(bestGenesByGeneration, Formatting.Indented);
