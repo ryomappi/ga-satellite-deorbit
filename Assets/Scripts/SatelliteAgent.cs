@@ -14,14 +14,14 @@ public class SatelliteAgent : Agent
     public float InitialMass { get; set; }  // 衛星の質量 (kg)
     public float InitialVelocity { get; set; } // 初期速度 (km/s)
     public float InitialHeight { get; set; }  // 初期高度 (km)
+    private float TargetHeight = 500f;  // 目標高度 (km)
     [SerializeField] private float CurrentHeight;  // 現在の高度 (km)
-    public float MaxHealth { get; set; }  // エージェントの最大体力
+    public float MaxHealth = 100f;  // エージェントの最大体力
     [SerializeField] private float Health;  // エージェントの体力
-    public float MaxFuel { get; set; }  // エージェントの最大燃料
-    public float MaxTime { get; set; }  // エージェントの最大使用時間
+    public float MaxFuel = 20f;  // エージェントの最大燃料
+    public float MaxTime = 3600f; // エージェントの最大使用時間
     public bool IsGravitated { get; set; }  // 万有引力を適用するかどうか
     public List<int> GeneData { get; set; }  // 遺伝子データ
-    private GaEnvironment ga;
     private TrailRenderer TrailRenderer;
 
     void Awake()
@@ -37,10 +37,7 @@ public class SatelliteAgent : Agent
         InitialMass = 100f;
         InitialVelocity = 7.350103183f;
         StartVelocity = new Vector3(0, InitialVelocity, 0);
-        MaxHealth = 10f;
         Health = MaxHealth;
-        MaxFuel = 20f;
-        MaxTime = 3600f;
         CurrentHeight = GetCurrentHeight();
         SatelliteRb.useGravity = false;
         IsGravitated = true;
@@ -50,11 +47,6 @@ public class SatelliteAgent : Agent
         // 衛星の質量、初速、重力を設定
         SatelliteRb.mass = InitialMass;
         SatelliteRb.linearVelocity = StartVelocity;
-
-        // Environmentの読み込み
-        GameObject now_env = GameObject.Find("Environment");
-        if (now_env != null) ga = now_env.GetComponent<GaEnvironment>();
-        else Debug.LogError("Environment is not found");
     }
 
     public override void Stop()
@@ -134,20 +126,20 @@ public class SatelliteAgent : Agent
     {
         /* 適応度の計算
             F(x) = w_1 * \frac{T_current}{T_max} + w_2 * \frac{F_current}{F_max} + w_3 * P
-            - T_current: 使用時間
+            - T_current: 残り時間
             - T_max: 最大使用時間
-            - F_current: 使用燃料
+            - F_current: 燃料残量
             - F_max: 最大使用燃料
             - P: タスクを達成したかどうか
             - w_1, w_2, w_3: 重み
         */
 
-        float w1 = 0.5f;
-        float w2 = 0.5f;
+        float w1 = 0.2f;
+        float w2 = 0.8f;
         float w3 = 1;
-        float T_current = UsedTime;
+        float T_current = MaxTime - UsedTime;
         float T_max = MaxTime;
-        float F_current = UsedFuel;
+        float F_current = MaxFuel - UsedFuel;
         float F_max = MaxFuel;
         float P = (Succeeded ? 0 : -1) * 1000;  // タスク達成時と失敗時で報酬に大きな差をつける
         return w1 * (T_current / T_max) + w2 * (F_current / F_max) + w3 * P;
@@ -205,7 +197,7 @@ public class SatelliteAgent : Agent
         }
 
         // タスク達成時に終了処理
-        if (CurrentHeight < ga.targetHeight)  // 目標高度: 500km
+        if (CurrentHeight < TargetHeight)  // 目標高度: 500km
         {
             Stop();
             Done();

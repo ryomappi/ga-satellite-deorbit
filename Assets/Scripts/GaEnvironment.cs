@@ -20,7 +20,6 @@ public class GaEnvironment : MonoBehaviour
     private int NAgents { get { return nAgents; } }
     [SerializeField][Range(1, 300)] private int nGeneration = 10;
     public int NGeneration { get { return nGeneration; } }
-    [SerializeField] public float targetHeight = 500f;  // 目標高度
     [Header("Agent Prefab"), SerializeField] public GameObject GObjectAgent = null;
     [Header("UI References"), SerializeField] private PopulationTextDisplay textDisplay = null;
     private PopulationTextDisplay TextDisplay { get { return textDisplay; } }
@@ -70,7 +69,7 @@ public class GaEnvironment : MonoBehaviour
         SetStartAgents();
         UpdateText();
         // ディレクトリがない場合は作成
-        string directoryPath = @"test";
+        string directoryPath = @"Assets/Results";
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
@@ -88,8 +87,9 @@ public class GaEnvironment : MonoBehaviour
         MetaFilePath = GetUniqueFilePath(directoryPath, "meta", "csv");
         using (StreamWriter metaFile = new StreamWriter(MetaFilePath, false, Encoding.UTF8))
         {
-            metaFile.WriteLine("TotalPopulation,TournamentSelection,EliteSelection,NGeneration");
-            metaFile.WriteLine(string.Format("{0},{1},{2},{3}", TotalPopulation, TournamentSelection, EliteSelection, NGeneration));
+            SatelliteAgent firstAgent = Agents[0].GetComponent<SatelliteAgent>();
+            metaFile.WriteLine("TotalPopulation,TournamentSelection,EliteSelection,NGeneration,MaxHealth,MaxFuel,MaxTime");
+            metaFile.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6}", TotalPopulation, TournamentSelection, EliteSelection, NGeneration, firstAgent.MaxHealth, firstAgent.MaxFuel, firstAgent.MaxTime));
             Console.WriteLine("メタ情報ファイルの作成" + MetaFilePath);
         }
 
@@ -259,6 +259,7 @@ public class GaEnvironment : MonoBehaviour
     {
         var children = new List<Gene>();
         var bestGenes = Genes.ToList();
+        
         // Elite Selection
         bestGenes.Sort(CompareGenes);
 

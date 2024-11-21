@@ -9,29 +9,44 @@ using UnityEditor;
 public class TestBestGene : MonoBehaviour
 {
     [Header("Agent Prefab"), SerializeField] private GameObject GObjectAgent = null;
+    [Header("Best Gene Path"), SerializeField] private string BestGeneFileName = null;
     private Agent testAgent;
     private Gene bestGene;
     void Awake()
     {
         // 最も優秀な遺伝子を読み込む
         bestGene = ReadBestGene();
-
+        if (bestGene == null)
+        {
+            Debug.LogError("Failed to read the best gene.");
+            return;
+        }
         // 衛星エージェントを生成
         var obj = Instantiate(GObjectAgent);
         obj.SetActive(true);
         testAgent = obj.GetComponent<Agent>();
+        if (testAgent == null)
+        {
+            Debug.LogError("Failed to get Agent component from the instantiated object.");
+            return;
+        }
     }
 
     void Start()
     {
-        // 衛星エージェントを初期化
-        testAgent.Reset();
-        // 遺伝子を適用
-        testAgent.ApplyGene(bestGene);
+        if (testAgent != null && bestGene != null)
+        {
+            // 衛星エージェントを初期化
+            testAgent.Reset();
+            // 遺伝子を適用
+            testAgent.ApplyGene(bestGene);
+        }
     }
 
     void FixedUpdate()
     {
+        if (testAgent == null) return;
+
         // エージェントがタスクを完了したら終了
         if (testAgent.IsDone)
         {
@@ -51,11 +66,11 @@ public class TestBestGene : MonoBehaviour
     {
         Gene gene = new Gene();
         gene.data = new List<int>();
+        string BestGenePath = Path.Combine(Application.dataPath, "results", BestGeneFileName);
 
-        string filePath = Path.Combine("test", "best_gene.txt");
-        if (File.Exists(filePath))
+        if (File.Exists(BestGenePath))
         {
-            using (StreamReader file = new StreamReader(filePath, Encoding.UTF8))
+            using (StreamReader file = new StreamReader(BestGenePath, Encoding.UTF8))
             {
                 string line;
                 while ((line = file.ReadLine()) != null)
@@ -69,9 +84,14 @@ public class TestBestGene : MonoBehaviour
         }
         else
         {
-            Debug.LogError("best_gene.txt not found.");
+            Debug.LogError($"Best Gene Path not found: {BestGenePath}");
+            return null;
         }
-
+        // gene.dataの中身を見る
+        for (int i = 0; i < gene.data.Count; i++)
+        {
+            Debug.Log($"Gene.data[{i}]: {gene.data[i]}");
+        }
         return gene;
     }
 }

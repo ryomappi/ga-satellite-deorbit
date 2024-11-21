@@ -51,7 +51,7 @@ public class SatelliteController : MonoBehaviour
         {
             if ((thrustState & (1 << i)) != 0)
             {
-                if (satelliteAgent.SatelliteRb.mass <= thrusters[i].fuelConsumption) continue;
+                if (satelliteAgent.SatelliteRb.mass - thrusters[i].fuelConsumption < satelliteAgent.InitialMass - satelliteAgent.MaxFuel) continue;
                 else {
                     thrusters[i].ApplyForce(GetComponent<Rigidbody>());
                     // スラスタ1個噴くごとに燃料を消費

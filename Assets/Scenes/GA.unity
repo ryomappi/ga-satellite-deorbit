@@ -242,6 +242,8 @@ MonoBehaviour:
   AvgFitness: 0
   AvgUsedFuel: 0
   AvgUsedTime: 0
+  Top10AvgUsedFuel: 0
+  Top10AvgUsedTime: 0
 --- !u!4 &735091082
 Transform:
   m_ObjectHideFlags: 0
