@@ -61,7 +61,7 @@ public class SatelliteAgent : Agent
         string filePath = Path.Combine(directoryPath, "record.csv");
         using (StreamWriter file = new StreamWriter(filePath, false, Encoding.UTF8))
         {
-            file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6}", "Generation", "Best Record", "Best this gen", "Number of Agents that completed the task", "Average Fitness", "Average Used Fuel", "Average Used Time"));
+            file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6}", "Generation", "Best Record", "Best this gen", "Succeeded Agents", "Average Fitness", "Average Used Fuel", "Average Used Time"));
             Console.WriteLine("ファイルの作成");
         }
 

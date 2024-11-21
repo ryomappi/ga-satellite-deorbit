@@ -197,7 +197,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalPopulation: 200
   tournamentSelection: 85
-  eliteSelection: 10
+  eliteSelection: 4
   nAgents: 4
   nGeneration: 10
   targetHeight: 500
@@ -238,7 +238,10 @@ MonoBehaviour:
   Generation: 0
   BestRecord: 0
   GenBestRecord: 0
+  SucceededAgents: 0
+  AvgFitness: 0
   AvgUsedFuel: 0
+  AvgUsedTime: 0
 --- !u!4 &735091082
 Transform:
   m_ObjectHideFlags: 0

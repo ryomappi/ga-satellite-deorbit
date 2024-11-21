@@ -127,8 +127,9 @@ public class GaEnvironment : MonoBehaviour
                 GenBestRecord = Mathf.Max(CalcRecord(p), GenBestRecord);
                 p.gene.Fitness = fitness;  // 遺伝子に適応度を反映
                 p.gene.UsedFuel = usedFuel;  // 遺伝子に使用燃料を反映
-                SumFitness += fitness;
+                p.gene.UsedTime = usedTime;  // 遺伝子に使用時間を反映
 
+                SumFitness += fitness;
                 if (p.agent.Succeeded)
                 {  // タスクを完了したエージェントに対してのみ計算する
                     SumUsedFuel += usedFuel;
@@ -254,7 +255,7 @@ public class GaEnvironment : MonoBehaviour
     private void WriteRecord()
     {
         StreamWriter file = new StreamWriter(@"test/record.csv", true, Encoding.UTF8);
-        file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5,{6}", Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime));
+        file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6}", Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime));
         file.Close();
     }
 

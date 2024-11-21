@@ -1,1 +1,4 @@
-﻿Generation,Best Record,Best this gen,Number of Agents that completed the task,Average Fitness,Average Used Fuel,Average Used Time
+﻿Generation,Best Record,Best this gen,Succeeded Agents,Average Fitness,Average Used Fuel,Average Used Time
+1,0.6732073,0.6732073,44,-155.8415,4.404148,133.5188
+2,0.7143975,0.7143975,157,-42.48093,15.71623,558.3894
+3,0.7143975,0.6790029,87,-112.705,8.708648,307.5122
