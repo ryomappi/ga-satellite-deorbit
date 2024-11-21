@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using System.Text;
+using NUnit.Framework;
 
 public class SatelliteAgent : Agent
 {
@@ -17,8 +18,11 @@ public class SatelliteAgent : Agent
     [SerializeField] private float CurrentHeight;  // 現在の高度 (km)
     public float MaxHealth { get; set; }  // エージェントの最大体力
     [SerializeField] private float Health;  // エージェントの体力
+    public float MaxFuel { get; set; }  // エージェントの最大燃料
+    public float MaxTime { get; set; }  // エージェントの最大使用時間
     public bool IsGravitated { get; set; }  // 万有引力を適用するかどうか
     public List<int> GeneData { get; set; }  // 遺伝子データ
+    private GaEnvironment ga;
 
     void Awake()
     {
@@ -34,6 +38,8 @@ public class SatelliteAgent : Agent
         StartVelocity = new Vector3(0, InitialVelocity, 0);
         MaxHealth = 10f;
         Health = MaxHealth;
+        MaxFuel = 20f;
+        MaxTime = 3600f;
         CurrentHeight = GetCurrentHeight();
         SatelliteRb.useGravity = false;
         IsGravitated = true;
@@ -55,9 +61,13 @@ public class SatelliteAgent : Agent
         string filePath = Path.Combine(directoryPath, "record.csv");
         using (StreamWriter file = new StreamWriter(filePath, false, Encoding.UTF8))
         {
-            file.WriteLine(string.Format("{0},{1},{2},{3}", "Generation", "Best Record", "Best this gen", "Average"));
+            file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6}", "Generation", "Best Record", "Best this gen", "Number of Agents that completed the task", "Average Fitness", "Average Used Fuel", "Average Used Time"));
             Console.WriteLine("ファイルの作成");
         }
+
+        // Environmentの読み込み
+        GameObject now_env = GameObject.Find("Environment");
+        ga = now_env.GetComponent<GaEnvironment>();
     }
 
     public override void Stop()
@@ -82,9 +92,12 @@ public class SatelliteAgent : Agent
         CurrentHeight = GetCurrentHeight();
         IsGravitated = true;
         Health = MaxHealth;
+        MaxFuel = 20f;
+        MaxTime = 1000f;
 
         SetFitness(0);
         SetUsedFuel(0);
+        SetUsedTime(0);
     }
 
     // 衛星の現在の高度を取得
@@ -124,6 +137,29 @@ public class SatelliteAgent : Agent
         return segment;
     }
 
+    public float CalcFitness()
+    {
+        /* 適応度の計算
+            F(x) = w_1 * \frac{T_current}{T_max} + w_2 * \frac{F_current}{F_max} + w_3 * P
+            - T_current: 使用時間
+            - T_max: 最大使用時間
+            - F_current: 使用燃料
+            - F_max: 最大使用燃料
+            - P: タスクを達成したかどうか
+            - w_1, w_2, w_3: 重み
+        */
+
+        float w1 = 0.5f;
+        float w2 = 0.3f;
+        float w3 = 0.2f;
+        float T_current = UsedTime;
+        float T_max = MaxTime;
+        float F_current = UsedFuel;
+        float F_max = MaxFuel;
+        float P = (Succeeded ? 0 : -1) * 1000;  // タスク達成時と失敗時で報酬に大きな差をつける
+        return w1 * (T_current / T_max) + w2 * (F_current / F_max) + w3 * P;
+    }
+
     // Agentの更新・終了判定と報酬の更新
     public override void AgentUpdate()
     {
@@ -138,7 +174,7 @@ public class SatelliteAgent : Agent
         // 万有引力を適用
         Gravitate();  // memo: これはSatelliteController.cs内のFixedUpdate()で呼び出してもいいかも
 
-        // 衛星の角度に応じてスラスタを制御 + 質量・使用燃料・適応度を更新
+        // 衛星の角度に応じてスラスタを制御 + 質量・使用燃料を更新
         int tiltSegment = GetTiltSegment();
         if (tiltSegment >= 0 && tiltSegment < GeneData.Count)
         {
@@ -150,34 +186,47 @@ public class SatelliteAgent : Agent
             Debug.LogError("Angle segment out of range: " + tiltSegment);
         }
 
-        // 衛星の高度を更新
+        // 使用時間を更新
+        AddUsedTime(Time.fixedDeltaTime);
+
+        // 高度を更新
         float prevHeight = CurrentHeight;
         CurrentHeight = GetCurrentHeight();
 
-        // 高度が減少しない場合、エージェントの体力を減少させる
-        if (Health > 0 && CurrentHeight >= prevHeight)
+        // MaxTimeを超えた場合は終了
+        if (UsedTime > MaxTime)
         {
-            Health -= 0.0001f;
+            Stop();
+            Done();
+            AddFitness(CalcFitness());
+            return;
+        }
+
+        // 高度が減少していない場合体力を減らす
+        if (CurrentHeight >= prevHeight)
+        {
+            Health -= 0.1f;
+        } else
+        {
+            Health += 0.01f;
         }
 
         // タスク達成時に終了処理
-        if (CurrentHeight < 500)  // 目標高度: 500km
+        if (CurrentHeight < ga.targetHeight)  // 目標高度: 500km
         {
             Stop();
             Done();
             Succeed();
-            // 降下した高度を適応度として与える
-            AddFitness(InitialHeight - CurrentHeight); // ここは必ず500になってしまいそう?
+            AddFitness(CalcFitness());
             return;
         }
 
-        // エージェントの体力が0になったら終了
+        // 体力が0になった場合は終了
         if (Health <= 0)
         {
             Stop();
             Done();
-            // 降下した高度を適応度として与える
-            AddFitness(InitialHeight - CurrentHeight);
+            AddFitness(CalcFitness());
             return;
         }
     }

@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   force: 0.6
-  fuelConsumption: 0.05
+  fuelConsumption: 0.005
 --- !u!1 &4279985574434504366
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,7 +245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   force: 0.6
-  fuelConsumption: 0.05
+  fuelConsumption: 0.005
 --- !u!1 &6221873601760347515
 GameObject:
   m_ObjectHideFlags: 0
@@ -368,7 +368,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   force: 0.6
-  fuelConsumption: 0.05
+  fuelConsumption: 0.005
 --- !u!1 &6974505069410188170
 GameObject:
   m_ObjectHideFlags: 0
@@ -526,7 +526,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   force: 0.6
-  fuelConsumption: 0.05
+  fuelConsumption: 0.005
 --- !u!1 &8671342661150307985
 GameObject:
   m_ObjectHideFlags: 0
@@ -652,6 +652,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30b4912dd61564d7e97b8bdcc5356d61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CurrentHeight: 0
   Health: 0
 --- !u!54 &5899225072508332355
 Rigidbody:

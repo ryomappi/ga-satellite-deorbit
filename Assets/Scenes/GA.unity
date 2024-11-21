@@ -199,7 +199,8 @@ MonoBehaviour:
   tournamentSelection: 85
   eliteSelection: 10
   nAgents: 4
-  nGeneration: 1
+  nGeneration: 10
+  targetHeight: 500
   GObjectAgent: {fileID: 1800785213}
   textDisplay: {fileID: 735091081}
   Operator: {fileID: 11400000, guid: 50d3379d08e7646afb815ebd54fd489c, type: 2}
@@ -631,13 +632,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1935373394}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -16000}
+  m_LocalRotation: {x: -0.0669873, y: 0.9330127, z: -0.25000006, w: -0.24999994}
+  m_LocalPosition: {x: 7754, y: 6000, z: 8098}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 30, y: 210, z: 0}
 --- !u!114 &1935373398
 MonoBehaviour:
   m_ObjectHideFlags: 0

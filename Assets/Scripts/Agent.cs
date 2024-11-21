@@ -9,6 +9,7 @@ public abstract class Agent : MonoBehaviour
     public float Fitness { get; private set; }  // エージェントの適応度
     public float SpentTime { get; private set; }  // エージェントがタスク達成に使用した時間
     public float UsedFuel { get; private set; }  // エージェントがタスク達成に使用した燃料
+    public float UsedTime { get; private set; }  // エージェントがタスク達成に使用した時間
 
     public void SetFitness(float fitness)
     {
@@ -25,6 +26,14 @@ public abstract class Agent : MonoBehaviour
     public void AddUsedFuel(float usedFual)
     {
         UsedFuel += usedFual;
+    }
+    public void SetUsedTime(float usedTime)
+    {
+        UsedTime = usedTime;
+    }
+    public void AddUsedTime(float usedTime)
+    {
+        UsedTime += usedTime;
     }
     public abstract void AgentUpdate();
     public abstract void AgentReset();

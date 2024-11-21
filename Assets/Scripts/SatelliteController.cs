@@ -45,7 +45,7 @@ public class SatelliteController : MonoBehaviour
     public void ApplyThrust(int thrustState)
     {
         // 燃料がない場合にはスラスタを噴射しない
-        if (satelliteAgent.SatelliteRb.mass <= satelliteAgent.InitialMass * 0.8f) return;
+        if (satelliteAgent.SatelliteRb.mass <= satelliteAgent.InitialMass - satelliteAgent.MaxFuel) return;
 
         for (int i = 0; i < thrusters.Length; i++)
         {
@@ -57,7 +57,6 @@ public class SatelliteController : MonoBehaviour
                     // スラスタ1個噴くごとに燃料を消費
                     satelliteAgent.SatelliteRb.mass -= thrusters[i].fuelConsumption;  // 衛星の質量を更新
                     satelliteAgent.AddUsedFuel(thrusters[i].fuelConsumption);  // 使用燃料を更新
-                    satelliteAgent.AddFitness(-thrusters[i].fuelConsumption);  // 適応度を更新
                 }
             }
         }

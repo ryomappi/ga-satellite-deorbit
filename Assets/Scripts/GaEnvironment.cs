@@ -20,6 +20,7 @@ public class GaEnvironment : MonoBehaviour
     private int NAgents { get { return nAgents; } }
     [SerializeField][Range(1, 300)] private int nGeneration = 10;
     private int NGeneration { get { return nGeneration; } }
+    [SerializeField] public float targetHeight = 500f;  // 目標高度
     [Header("Agent Prefab"), SerializeField] public GameObject GObjectAgent = null;
     [Header("UI References"), SerializeField] private PopulationTextDisplay textDisplay = null;
     private PopulationTextDisplay TextDisplay { get { return textDisplay; } }
@@ -28,6 +29,9 @@ public class GaEnvironment : MonoBehaviour
     private float AvgFitness { get; set; }  // 一世代の適応度の平均
     private float SumUsedFuel { get; set; }  // 一世代の使用燃料の合計
     private float AvgUsedFuel { get; set; }  // 一世代の使用燃料の平均
+    private float SumUsedTime { get; set; }  // 一世代の使用時間の合計
+    private float AvgUsedTime { get; set; }  // 一世代の使用時間の平均
+    private int SucceededAgents { get; set; }  // タスクを完了したエージェントの数
     private List<GameObject> GObjects = new List<GameObject>();  // 生成したゲームオブジェクトを格納するリスト
     private List<Agent> Agents = new List<Agent>();  // 生成したエージェントを格納するリスト <- エージェントの基本的な操作ができる
     private List<Gene> Genes = new List<Gene>();  // 生成した遺伝子を格納するリスト
@@ -85,24 +89,7 @@ public class GaEnvironment : MonoBehaviour
 
     private float CalcRecord(AgentPair p)
     {
-        /* 点数計算方式
-            100点満点方式 (ただし負の点数を取りうる)
-
-            高度
-            - 500kmまでさげられていたら100点
-            - それ以外は0点
-            使用燃料
-            - 使用した分だけ減点
-        */
-
-        float record = 0f;
-        if (p.agent.Succeeded)
-        {
-            record += 100f;
-        }
-        record -= p.agent.UsedFuel;
-
-        return record;
+        return p.agent.Fitness;
     }
 
     // 生きているAgentを更新する
@@ -132,7 +119,7 @@ public class GaEnvironment : MonoBehaviour
             {
                 float fitness = p.agent.Fitness;
                 float usedFuel = p.agent.UsedFuel;
-                // Debug.Log($"Generation {Generation} => Fitness: {fitness}, UsedFuel: {usedFuel}");
+                float usedTime = p.agent.UsedTime;
                 GenMaxFitness = Mathf.Max(fitness, GenMaxFitness);
                 if (CalcRecord(p) > BestRecord) BestGene = p.gene;
 
@@ -141,7 +128,13 @@ public class GaEnvironment : MonoBehaviour
                 p.gene.Fitness = fitness;  // 遺伝子に適応度を反映
                 p.gene.UsedFuel = usedFuel;  // 遺伝子に使用燃料を反映
                 SumFitness += fitness;
-                SumUsedFuel += usedFuel;
+
+                if (p.agent.Succeeded)
+                {  // タスクを完了したエージェントに対してのみ計算する
+                    SumUsedFuel += usedFuel;
+                    SumUsedTime += usedTime;
+                    SucceededAgents++;
+                }
             }
             return p.agent.IsDone;
         });
@@ -179,13 +172,16 @@ public class GaEnvironment : MonoBehaviour
     {
         AvgFitness = SumFitness / TotalPopulation;
         AvgUsedFuel = SumUsedFuel / TotalPopulation;
+        AvgUsedTime = SumUsedTime / TotalPopulation;
         // 新しい世代
         // 新世代の生成と評価値などの初期化を行う
         GenPopulation();
-        GenMaxFitness = -100;
+        GenMaxFitness = -1000;
         SumFitness = 0;
         SumUsedFuel = 0;
-        GenBestRecord = -100;
+        SumUsedTime = 0;
+        GenBestRecord = -1000;
+        SucceededAgents = 0;
         Agents.ForEach(a => a.Reset());
         SetStartAgents();
         UpdateText();
@@ -209,13 +205,7 @@ public class GaEnvironment : MonoBehaviour
 
         for (int i = 0; i < EliteSelection; i++)
         {
-            Debug.Log($"Elite {i + 1}: {bestGenes[i].Fitness}");  // bestGenesの上位EliteSelection個のFitnessを表示
             children.Add(Operator.Clone(bestGenes[i]));  // エリートな遺伝子はそのまま次世代に引き継ぐ
-        }
-        // childrenにはエリート選択で選ばれた遺伝子が入っていることを確認
-        for (int i = 0; i < children.Count; i++)
-        {
-            Debug.Assert(bestGenes[i].data.SequenceEqual(children[i].data), $"Gene data mismatch at index {i}");
         }
 
         float mutate_only = 0.3f;
@@ -248,7 +238,7 @@ public class GaEnvironment : MonoBehaviour
     {
         if (TextDisplay != null)
         {
-            TextDisplay.UpdateText(TotalPopulation, TotalPopulation - CurrentGenes.Count, Generation, BestRecord, GenBestRecord, AvgUsedFuel);
+            TextDisplay.UpdateText(TotalPopulation, TotalPopulation - CurrentGenes.Count, Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime);
         }
         else
         {
@@ -264,7 +254,7 @@ public class GaEnvironment : MonoBehaviour
     private void WriteRecord()
     {
         StreamWriter file = new StreamWriter(@"test/record.csv", true, Encoding.UTF8);
-        file.WriteLine(string.Format("{0},{1},{2},{3}", Generation, BestRecord, GenBestRecord, AvgFitness));
+        file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5,{6}", Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime));
         file.Close();
     }
 
