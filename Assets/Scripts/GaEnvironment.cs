@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Linq;
+using Newtonsoft.Json;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -41,8 +42,6 @@ public class GaEnvironment : MonoBehaviour
     private List<AgentPair> AgentsSet = new List<AgentPair>();  // 生成したエージェントと遺伝子のペアを格納するリスト
     private Queue<Gene> CurrentGenes;  // 現在の遺伝子を格納するキュー
     [Header("Gene"), SerializeField] private GeneOperator Operator = null;  // 遺伝子操作を行うオペレーター
-
-    private float GenMaxFitness { get; set; }
     private Gene BestGene = new Gene();
     private string RecordPath;
     private string MetaFilePath;
@@ -164,11 +163,16 @@ public class GaEnvironment : MonoBehaviour
                 float usedFuel = p.agent.UsedFuel;
                 float usedTime = p.agent.UsedTime;
                 bool succeeded = p.agent.Succeeded;
-                GenMaxFitness = Mathf.Max(fitness, GenMaxFitness);
-                if (CalcRecord(p) > BestRecord) BestGene = p.gene;
 
-                BestRecord = Mathf.Max(CalcRecord(p), BestRecord);
-                GenBestRecord = Mathf.Max(CalcRecord(p), GenBestRecord);
+                // 記録更新
+                float record = CalcRecord(p);
+                GenBestRecord = Mathf.Max(record, GenBestRecord);
+                if (record > BestRecord)
+                {
+                    BestRecord = record;
+                    BestGene = p.gene;
+                }
+
                 p.gene.Fitness = fitness;  // 遺伝子に適応度を反映
                 p.gene.UsedFuel = usedFuel;  // 遺伝子に使用燃料を反映
                 p.gene.UsedTime = usedTime;  // 遺伝子に使用時間を反映
@@ -187,7 +191,8 @@ public class GaEnvironment : MonoBehaviour
 
         if (CurrentGenes.Count == 0 && AgentsSet.Count == 0)  // 一世代の全ての個体がタスクを終了したら
         {
-            Debug.Log($"Generation {Generation + 1} Max Fitness: {GenMaxFitness}");
+            Debug.Log($"Generation {Generation + 1} Max Fitness: {GenBestRecord}");
+            WriteBestGenes();
             SetNextGeneration();
         }
         else
@@ -226,7 +231,8 @@ public class GaEnvironment : MonoBehaviour
         {
             Top10AvgUsedFuel = succeededTop10Genes.Average(g => g.UsedFuel);
             Top10AvgUsedTime = succeededTop10Genes.Average(g => g.UsedTime);
-        } else
+        }
+        else
         {  // タスクを完了したエージェントが0の場合は-100を代入
             Top10AvgUsedFuel = -100;
             Top10AvgUsedTime = -100;
@@ -235,7 +241,6 @@ public class GaEnvironment : MonoBehaviour
         // 新しい世代
         // 新世代の生成と評価値などの初期化を行う
         GenPopulation();
-        GenMaxFitness = -1000;
         SumFitness = 0;
         SumUsedFuel = 0;
         SumUsedTime = 0;
@@ -259,7 +264,7 @@ public class GaEnvironment : MonoBehaviour
     {
         var children = new List<Gene>();
         var bestGenes = Genes.ToList();
-        
+
         // Elite Selection
         bestGenes.Sort(CompareGenes);
 
@@ -328,5 +333,28 @@ public class GaEnvironment : MonoBehaviour
                 file.WriteLine(value);
             }
         }
+    }
+
+    private void WriteBestGenes()
+    {
+        string bestGenesPath = Path.Combine(Application.dataPath, "results", "best_genes.txt");
+        Dictionary<int, List<int>> bestGenesByGeneration;
+        if (File.Exists(bestGenesPath))
+        {
+            // 既存のJSONファイルを読み込む
+            string json = File.ReadAllText(bestGenesPath);
+            bestGenesByGeneration = JsonConvert.DeserializeObject<Dictionary<int, List<int>>>(json);
+        }
+        else
+        {
+            bestGenesByGeneration = new Dictionary<int, List<int>>();
+        }
+
+        // 現在の世代の最も優れた遺伝子を追加
+        bestGenesByGeneration[Generation] = BestGene.data;
+
+        // JSONファイルに書き出す
+        string updatedJson = JsonConvert.SerializeObject(bestGenesByGeneration, Formatting.Indented);
+        File.WriteAllText(bestGenesPath, updatedJson);
     }
 }

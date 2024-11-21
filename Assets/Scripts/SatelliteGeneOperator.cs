@@ -48,14 +48,16 @@ public class SatelliteGeneOperator : GeneOperator
         // [0,1] の範囲
         float a = 0.05f;
         float b = 30.0f;
-        return a + (1.0f - a) * Mathf.Max(0f, 1.0f - generation / b);
+        float baseRate = a + (1.0f - a) * Mathf.Max(0f, 1.0f - generation / b);
+        float perturbation = UnityEngine.Random.value < 0.1f ? 0.05f : 0f; // 10%の確率で増加
+        return Mathf.Clamp01(baseRate + perturbation);
     }
 
     private int MutateClamp(int x, float p, int min, int max)
     {
         // 値が取りうる範囲の 100% の範囲で摂動を与える
         // 0 <= p <= 1
-        int r = Mathf.RoundToInt((max - min) * p * PosProb);
+        int r = Mathf.Max(1, Mathf.RoundToInt((max - min) * p * PosProb));
         x += UnityEngine.Random.Range(-r, r);
         x = Mathf.Clamp(x, min, max);
         return x;
