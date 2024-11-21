@@ -46,6 +46,7 @@ public class GaEnvironment : MonoBehaviour
     private string RecordPath;
     private string MetaFilePath;
     private string BestGenePath;
+    private string BestGenesPath;
 
     void Awake()
     {
@@ -94,6 +95,9 @@ public class GaEnvironment : MonoBehaviour
 
         // BestGeneファイルのパスを設定
         BestGenePath = GetUniqueFilePath(directoryPath, "best_gene", "txt");
+
+        // BestGenesファイルのパスを設定
+        BestGenesPath = GetUniqueFilePath(directoryPath, "best_genes", "json");
     }
 
     private string GetUniqueFilePath(string directoryPath, string baseFileName, string extension)
@@ -337,12 +341,11 @@ public class GaEnvironment : MonoBehaviour
 
     private void WriteBestGenes()
     {
-        string bestGenesPath = Path.Combine(Application.dataPath, "results", "best_genes.txt");
         Dictionary<int, List<int>> bestGenesByGeneration;
-        if (File.Exists(bestGenesPath))
+        if (File.Exists(BestGenesPath))
         {
             // 既存のJSONファイルを読み込む
-            string json = File.ReadAllText(bestGenesPath);
+            string json = File.ReadAllText(BestGenesPath);
             bestGenesByGeneration = JsonConvert.DeserializeObject<Dictionary<int, List<int>>>(json);
         }
         else
@@ -355,6 +358,6 @@ public class GaEnvironment : MonoBehaviour
 
         // JSONファイルに書き出す
         string updatedJson = JsonConvert.SerializeObject(bestGenesByGeneration, Formatting.Indented);
-        File.WriteAllText(bestGenesPath, updatedJson);
+        File.WriteAllText(BestGenesPath, updatedJson);
     }
 }
