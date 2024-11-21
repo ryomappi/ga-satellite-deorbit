@@ -45,6 +45,9 @@ public class GaEnvironment : MonoBehaviour
 
     private float GenMaxFitness { get; set; }
     private Gene BestGene = new Gene();
+    private string RecordPath;
+    private string MetaFilePath;
+    private string BestGenePath;
 
     void Awake()
     {
@@ -66,6 +69,44 @@ public class GaEnvironment : MonoBehaviour
     {
         SetStartAgents();
         UpdateText();
+        // ディレクトリがない場合は作成
+        string directoryPath = @"test";
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        // ファイルの作成
+        RecordPath = GetUniqueFilePath(directoryPath, "record", "csv");
+        using (StreamWriter file = new StreamWriter(RecordPath, false, Encoding.UTF8))
+        {
+            file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", "Generation", "Best Record", "Best this gen", "Succeeded Agents", "Average Fitness", "Average Used Fuel", "Average Used Time", "Top 10 Average Used Fuel", "Top 10 Average Used Time"));
+            Console.WriteLine("ファイルの作成" + RecordPath);
+        }
+
+        // メタ情報ファイルの作成
+        MetaFilePath = GetUniqueFilePath(directoryPath, "meta", "csv");
+        using (StreamWriter metaFile = new StreamWriter(MetaFilePath, false, Encoding.UTF8))
+        {
+            metaFile.WriteLine("TotalPopulation,TournamentSelection,EliteSelection,NGeneration");
+            metaFile.WriteLine(string.Format("{0},{1},{2},{3}", TotalPopulation, TournamentSelection, EliteSelection, NGeneration));
+            Console.WriteLine("メタ情報ファイルの作成" + MetaFilePath);
+        }
+
+        // BestGeneファイルのパスを設定
+        BestGenePath = GetUniqueFilePath(directoryPath, "best_gene", "txt");
+    }
+
+    private string GetUniqueFilePath(string directoryPath, string baseFileName, string extension)
+    {
+        int fileIndex = 1;
+        string filePath;
+        do
+        {
+            filePath = Path.Combine(directoryPath, $"{baseFileName}_{fileIndex}.{extension}");
+            fileIndex++;
+        } while (File.Exists(filePath));
+        return filePath;
     }
 
     // Agent,Geneを組としてAgentsSetにいれる
@@ -262,18 +303,20 @@ public class GaEnvironment : MonoBehaviour
 
     private void WriteRecord()
     {
-        StreamWriter file = new StreamWriter(@"test/record.csv", true, Encoding.UTF8);
-        file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime, Top10AvgUsedFuel, Top10AvgUsedTime));
-        file.Close();
+        using (StreamWriter file = new StreamWriter(RecordPath, true, Encoding.UTF8))
+        {
+            file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime, Top10AvgUsedFuel, Top10AvgUsedTime));
+        }
     }
 
     private void WriteBestGene()
     {
-        StreamWriter file = new StreamWriter(@"test/best_gene.txt", false, Encoding.UTF8);
-        foreach (var value in BestGene.data)
+        using (StreamWriter file = new StreamWriter(BestGenePath, false, Encoding.UTF8))
         {
-            file.WriteLine(value);
+            foreach (var value in BestGene.data)
+            {
+                file.WriteLine(value);
+            }
         }
-        file.Close();
     }
 }
