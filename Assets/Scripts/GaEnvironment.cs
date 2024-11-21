@@ -163,6 +163,7 @@ public class GaEnvironment : MonoBehaviour
                 float fitness = p.agent.Fitness;
                 float usedFuel = p.agent.UsedFuel;
                 float usedTime = p.agent.UsedTime;
+                bool succeeded = p.agent.Succeeded;
                 GenMaxFitness = Mathf.Max(fitness, GenMaxFitness);
                 if (CalcRecord(p) > BestRecord) BestGene = p.gene;
 
@@ -171,9 +172,10 @@ public class GaEnvironment : MonoBehaviour
                 p.gene.Fitness = fitness;  // 遺伝子に適応度を反映
                 p.gene.UsedFuel = usedFuel;  // 遺伝子に使用燃料を反映
                 p.gene.UsedTime = usedTime;  // 遺伝子に使用時間を反映
+                p.gene.Succeeded = succeeded;  // 遺伝子にタスク達成フラグを反映
 
                 SumFitness += fitness;
-                if (p.agent.Succeeded)
+                if (succeeded)
                 {  // タスクを完了したエージェントに対してのみ計算する
                     SumUsedFuel += usedFuel;
                     SumUsedTime += usedTime;
@@ -219,9 +221,16 @@ public class GaEnvironment : MonoBehaviour
         AvgUsedTime = SumUsedTime / TotalPopulation;
 
         // Top10の遺伝子の使用燃料と使用時間の平均を計算
-        var top10Genes = Genes.OrderByDescending(g => g.Fitness).Take(10).ToList();
-        Top10AvgUsedFuel = top10Genes.Average(g => g.UsedFuel);
-        Top10AvgUsedTime = top10Genes.Average(g => g.UsedTime);
+        var succeededTop10Genes = Genes.Where(g => g.Succeeded).OrderByDescending(g => g.Fitness).Take(10).ToList();
+        if (succeededTop10Genes.Count > 0)
+        {
+            Top10AvgUsedFuel = succeededTop10Genes.Average(g => g.UsedFuel);
+            Top10AvgUsedTime = succeededTop10Genes.Average(g => g.UsedTime);
+        } else
+        {  // タスクを完了したエージェントが0の場合は-100を代入
+            Top10AvgUsedFuel = -100;
+            Top10AvgUsedTime = -100;
+        }
 
         // 新しい世代
         // 新世代の生成と評価値などの初期化を行う

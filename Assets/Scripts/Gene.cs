@@ -16,5 +16,6 @@ public class Gene
     public float Fitness { get; set; }  // 適応度
     public float UsedFuel { get; set; }  // 使用した燃料
     public float UsedTime { get; set; }  // 使用した時間
+    public bool Succeeded { get; set; }  // タスクを達成したかどうか
     public List<int> data = new List<int>();  // 遺伝子データ
 }
