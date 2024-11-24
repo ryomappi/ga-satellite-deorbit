@@ -55,8 +55,8 @@ public class SatelliteController : MonoBehaviour
                     satelliteAgent.SatelliteRb.AddForce(thrustForce, ForceMode.Force);
 
                     // スラスタ1個噴くごとに燃料を消費
-                    satelliteAgent.SatelliteRb.mass -= thrusters[i].fuelConsumption;  // 衛星の質量を更新
-                    satelliteAgent.AddUsedFuel(thrusters[i].fuelConsumption);  // 使用燃料を更新
+                    satelliteAgent.SatelliteRb.mass -= thrusters[i].fuelConsumption * Time.fixedDeltaTime;  // 衛星の質量を更新
+                    satelliteAgent.AddUsedFuel(thrusters[i].fuelConsumption * Time.fixedDeltaTime);  // 使用燃料を更新
                 }
             }
         }
