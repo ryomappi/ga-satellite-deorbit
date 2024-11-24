@@ -66,7 +66,8 @@ public class TestBestGene : MonoBehaviour
     {
         Gene gene = new Gene();
         gene.data = new List<int>();
-        string BestGenePath = Path.Combine(Application.dataPath, "results", BestGeneFileName);
+        string BestGenePath = Path.Combine(Application.dataPath, "results", BestGeneFileName + ".txt");
+        Debug.Log("Best Gene Path: " + BestGenePath);
 
         if (File.Exists(BestGenePath))
         {
