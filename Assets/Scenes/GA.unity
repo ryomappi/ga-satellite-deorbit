@@ -392,8 +392,16 @@ PrefabInstance:
       value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 5899225072508332355, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
+      propertyPath: m_IsKinematic
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5899225072508332355, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
       propertyPath: m_ImplicitTensor
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5899225072508332355, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6563762767754551608, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
       propertyPath: m_Enabled
@@ -411,8 +419,7 @@ PrefabInstance:
       propertyPath: earth
       value: 
       objectReference: {fileID: 254780045}
-    m_RemovedComponents:
-    - {fileID: 6862742682098136116, guid: c2344c06db6aa45969dcad0026c7e1e5, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -493,8 +500,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 2333394540325272971, guid: cfa75cdf5a3f9466fb77f751cb6cb399, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:

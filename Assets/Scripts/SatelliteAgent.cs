@@ -49,6 +49,13 @@ public class SatelliteAgent : Agent
         SatelliteRb.linearVelocity = StartVelocity;
     }
 
+    private void CalcInitialVelocity()
+    {
+        // 衛星の初速を計算する
+        // 速度 = sqrt(G * M / r)
+        
+    }
+
     public override void Stop()
     {
         Controller.Stop();
