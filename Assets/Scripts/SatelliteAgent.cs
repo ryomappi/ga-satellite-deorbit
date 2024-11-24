@@ -197,13 +197,14 @@ public class SatelliteAgent : Agent
             return;
         }
 
-        // 高度が減少していない場合体力を減らす
+        // 高度が減少していない場合体力を減らし、減少している場合は体力を回復
         if (CurrentHeight >= prevHeight)
         {
             Health -= 0.1f;
         } else
         {
             Health += 0.01f;
+            Health = Mathf.Min(Health, MaxHealth);
         }
 
         // タスク達成時に終了処理
