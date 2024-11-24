@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2954398174011080212}
   - component: {fileID: 4949815115557631128}
   - component: {fileID: 8829364729345584043}
-  - component: {fileID: 3695923855807263471}
   - component: {fileID: 7713381017018652968}
   m_Layer: 0
   m_Name: UpThruster
@@ -88,27 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3695923855807263471
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1002037035663199783}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7713381017018652968
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,7 +112,6 @@ GameObject:
   - component: {fileID: 7390809169043502976}
   - component: {fileID: 7276266642618842186}
   - component: {fileID: 2432875437840980317}
-  - component: {fileID: 2948198132969246831}
   - component: {fileID: 4793891786835388571}
   m_Layer: 0
   m_Name: DownThruster
@@ -211,27 +188,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2948198132969246831
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4279985574434504366}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4793891786835388571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,7 +213,6 @@ GameObject:
   - component: {fileID: 4056181077720990213}
   - component: {fileID: 592927313658870177}
   - component: {fileID: 9186010567881383601}
-  - component: {fileID: 9036862158388363837}
   - component: {fileID: 361713318429674852}
   m_Layer: 0
   m_Name: RightThruster
@@ -334,27 +289,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &9036862158388363837
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6221873601760347515}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &361713318429674852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -415,7 +349,6 @@ GameObject:
   - component: {fileID: 217209237706230107}
   - component: {fileID: 4105132158422297316}
   - component: {fileID: 2604159780881818443}
-  - component: {fileID: 1084261164947572423}
   - component: {fileID: 6100074270831296651}
   m_Layer: 0
   m_Name: LeftThruster
@@ -492,27 +425,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &1084261164947572423
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7946935742474729422}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6100074270831296651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -675,6 +587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   earth: {fileID: 0}
+  gravitationalConstant: 6.6743e-20
 --- !u!96 &2770697051015288013
 TrailRenderer:
   serializedVersion: 3

@@ -78,8 +78,11 @@ public class SatelliteAgent : Agent
     public override void AgentReset()
     {
         transform.position = StartPosition;
+        transform.rotation = Quaternion.identity;
         SatelliteRb.mass = InitialMass;
         SatelliteRb.linearVelocity = StartVelocity;
+        SatelliteRb.angularVelocity = Vector3.zero;
+
         CurrentHeight = GetCurrentHeight();
         IsGravitated = true;
         Health = MaxHealth;
