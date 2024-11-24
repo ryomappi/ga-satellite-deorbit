@@ -14,8 +14,8 @@ public class SatelliteAgent : Agent
     [SerializeField] private float CurrentHeight;  // 現在の高度 (km)
     public float MaxHealth = 100f;  // エージェントの最大体力
     [SerializeField] private float Health;  // エージェントの体力
-    public float MaxFuel = 20f;  // エージェントの最大燃料
-    public float MaxTime = 3600f; // エージェントの最大使用時間
+    public float MaxFuel = 20f;  // エージェントの最大燃料 (kg)
+    public float MaxTime = 3600f;  // エージェントの最大使用時間 (s)
     public bool IsGravitated { get; set; }  // 万有引力を適用するかどうか
     public List<int> GeneData { get; set; }  // 遺伝子データ
     private TrailRenderer TrailRenderer;
@@ -29,12 +29,13 @@ public class SatelliteAgent : Agent
     void Start()
     {
         InitialHeight = 1000f;
-        StartPosition = new Vector3(12756.0f / 2.0f + InitialHeight, 0, 0);  // 地球の半径 + 衛星の高度 (km)
         InitialMass = 100f;
-        // InitialVelocity = 7.350103183f;
         InitialVelocity = CalcInitialVelocity();
+        StartPosition = new Vector3(12756.0f / 2.0f + InitialHeight, 0, 0);  // 地球の半径 + 衛星の高度 (km)
         StartVelocity = new Vector3(0, InitialVelocity, 0);
         Health = MaxHealth;
+        MaxFuel = 20f;
+        MaxTime = 3600f;
         CurrentHeight = GetCurrentHeight();
         SatelliteRb.useGravity = false;
         IsGravitated = true;
@@ -82,8 +83,6 @@ public class SatelliteAgent : Agent
         CurrentHeight = GetCurrentHeight();
         IsGravitated = true;
         Health = MaxHealth;
-        MaxFuel = 20f;
-        MaxTime = 1000f;
 
         // TrailRendererをリセット
         if (TrailRenderer != null)
