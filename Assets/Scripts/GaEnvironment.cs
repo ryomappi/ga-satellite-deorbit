@@ -49,6 +49,10 @@ public class GaEnvironment : MonoBehaviour
     private string BestGenePath;
     private string BestGenesPath;
     [Header("File Output"), SerializeField] private bool IsConsecutive = false;  // ファイル名に連番を用いるかどうか
+    [SerializeField] private bool OutputRecord = true;  // 記録ファイルを出力するかどうか
+    [SerializeField] private bool OutputMetaFile = true;  // メタ情報ファイルを出力するかどうか
+    [SerializeField] private bool OutputBestGene = true;  // 全世代で最良の遺伝子をファイルに出力するかどうか
+    [SerializeField] private bool OutputBestGenes = true;  // 各世代で最良の遺伝子をファイルに出力するかどうか
 
     void Awake()
     {
@@ -78,28 +82,39 @@ public class GaEnvironment : MonoBehaviour
         }
 
         // 記録ファイルの作成
-        RecordPath = GetUniqueFilePath(directoryPath, "record", "csv", IsConsecutive);
-        using (StreamWriter file = new StreamWriter(RecordPath, false, Encoding.UTF8))
+        if (OutputRecord)
         {
-            file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", "Generation", "Best Record", "Best this gen", "Succeeded Agents", "Average Fitness", "Average Used Fuel", "Average Used Time", "Top 10 Average Used Fuel", "Top 10 Average Used Time"));
-            Console.WriteLine("ファイルの作成" + RecordPath);
+            RecordPath = GetUniqueFilePath(directoryPath, "record", "csv", IsConsecutive);
+            using (StreamWriter file = new StreamWriter(RecordPath, false, Encoding.UTF8))
+            {
+                file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", "Generation", "Best Record", "Best this gen", "Succeeded Agents", "Average Fitness", "Average Used Fuel", "Average Used Time", "Top 10 Average Used Fuel", "Top 10 Average Used Time"));
+                Console.WriteLine("ファイルの作成" + RecordPath);
+            }
         }
-
         // メタ情報ファイルの作成
-        MetaFilePath = GetUniqueFilePath(directoryPath, "meta", "csv", IsConsecutive);
-        using (StreamWriter metaFile = new StreamWriter(MetaFilePath, false, Encoding.UTF8))
+        if (OutputMetaFile)
         {
-            SatelliteAgent firstAgent = Agents[0].GetComponent<SatelliteAgent>();
-            metaFile.WriteLine("TotalPopulation,TournamentSelection,EliteSelection,NGeneration,NAgents,MaxHealth,MaxFuel,MaxTime");
-            metaFile.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7}", TotalPopulation, TournamentSelection, EliteSelection, NGeneration, NAgents, firstAgent.MaxHealth, firstAgent.MaxFuel, firstAgent.MaxTime));
-            Console.WriteLine("メタ情報ファイルの作成" + MetaFilePath);
+            MetaFilePath = GetUniqueFilePath(directoryPath, "meta", "csv", IsConsecutive);
+            using (StreamWriter metaFile = new StreamWriter(MetaFilePath, false, Encoding.UTF8))
+            {
+                SatelliteAgent firstAgent = Agents[0].GetComponent<SatelliteAgent>();
+                metaFile.WriteLine("TotalPopulation,TournamentSelection,EliteSelection,NGeneration,NAgents,MaxHealth,MaxFuel,MaxTime");
+                metaFile.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7}", TotalPopulation, TournamentSelection, EliteSelection, NGeneration, NAgents, firstAgent.MaxHealth, firstAgent.MaxFuel, firstAgent.MaxTime));
+                Console.WriteLine("メタ情報ファイルの作成" + MetaFilePath);
+            }
         }
 
         // BestGeneファイルのパスを設定
-        BestGenePath = GetUniqueFilePath(directoryPath, "best_gene", "txt", IsConsecutive);
+        if (OutputBestGene)
+        {
+            BestGenePath = GetUniqueFilePath(directoryPath, "best_gene", "txt", IsConsecutive);
+        }
 
         // BestGenesファイルのパスを設定
-        BestGenesPath = GetUniqueFilePath(directoryPath, "best_genes", "json", IsConsecutive);
+        if (OutputBestGenes)
+        {
+            BestGenesPath = GetUniqueFilePath(directoryPath, "best_genes", "json", IsConsecutive);
+        }
     }
 
     private string GetUniqueFilePath(string directoryPath, string baseFileName, string extension, bool isConsecutive)
@@ -337,6 +352,7 @@ public class GaEnvironment : MonoBehaviour
 
     private void WriteRecord()
     {
+        if (!OutputRecord) return;
         using (StreamWriter file = new StreamWriter(RecordPath, true, Encoding.UTF8))
         {
             file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime, Top10AvgUsedFuel, Top10AvgUsedTime));
@@ -345,6 +361,7 @@ public class GaEnvironment : MonoBehaviour
 
     private void WriteBestGene()
     {
+        if (!OutputBestGene) return;
         using (StreamWriter file = new StreamWriter(BestGenePath, false, Encoding.UTF8))
         {
             foreach (var value in BestGene.data)
@@ -356,6 +373,7 @@ public class GaEnvironment : MonoBehaviour
 
     private void WriteBestGenes()
     {
+        if (!OutputBestGenes) return;
         Dictionary<int, Dictionary<string, object>> bestGenesByGeneration;
         if (File.Exists(BestGenesPath))
         {
