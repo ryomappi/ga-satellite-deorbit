@@ -1,9 +1,5 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using System.IO;
-using System.Text;
 
 public class SatelliteAgent : Agent
 {
@@ -58,7 +54,7 @@ public class SatelliteAgent : Agent
         float M = 5.972e24f;
         float r = 12756.0f / 2.0f + InitialHeight;
         float initialVelocity = Mathf.Sqrt(G * M / r);
-        return initialVelocity;
+        return initialVelocity;  // km/s
     }
 
     public override void Stop()
@@ -78,10 +74,10 @@ public class SatelliteAgent : Agent
     public override void AgentReset()
     {
         transform.position = StartPosition;
-        // transform.rotation = Quaternion.identity;
+        transform.rotation = Quaternion.identity;
         SatelliteRb.mass = InitialMass;
         SatelliteRb.linearVelocity = StartVelocity;
-        // SatelliteRb.angularVelocity = Vector3.zero;
+        SatelliteRb.angularVelocity = Vector3.zero;
 
         CurrentHeight = GetCurrentHeight();
         IsGravitated = true;
