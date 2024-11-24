@@ -72,6 +72,10 @@ public class GaEnvironment : MonoBehaviour
 
     void Start()
     {
+        // BestRecord, GenBestRecordの初期化
+        BestRecord = -1000;
+        GenBestRecord = -1000;
+
         SetStartAgents();
         UpdateText();
         // ディレクトリがない場合は作成
