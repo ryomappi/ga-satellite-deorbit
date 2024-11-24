@@ -8,7 +8,7 @@ public class EarthAgent: MonoBehaviour
     [Tooltip("Rotation speed of the Earth in degrees per second")]
     public float rotationSpeed = 10f;
 
-    void Update()
+    void FixedUpdate()
     {
         // Rotate the Earth around the y-axis
         transform.Rotate(Vector3.up, -rotationSpeed * Time.deltaTime);

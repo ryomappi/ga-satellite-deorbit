@@ -142,7 +142,7 @@ public class SatelliteAgent : Agent
         float F_current = MaxFuel - UsedFuel;
         float F_max = MaxFuel;
         float P = (Succeeded ? 0 : -1) * 1000;  // タスク達成時と失敗時で報酬に大きな差をつける
-        return w1 * (T_current / T_max) + w2 * (F_current / F_max) + w3 * P;
+        return w1 * (T_current / T_max) + w2 * Mathf.Pow(F_current / F_max, 2) + w3 * P;
     }
 
     // Agentの更新・終了判定と報酬の更新

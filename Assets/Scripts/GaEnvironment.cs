@@ -76,7 +76,7 @@ public class GaEnvironment : MonoBehaviour
             Directory.CreateDirectory(directoryPath);
         }
 
-        // ファイルの作成
+        // 記録ファイルの作成
         RecordPath = GetUniqueFilePath(directoryPath, "record", "csv", IsConsecutive);
         using (StreamWriter file = new StreamWriter(RecordPath, false, Encoding.UTF8))
         {
@@ -89,8 +89,8 @@ public class GaEnvironment : MonoBehaviour
         using (StreamWriter metaFile = new StreamWriter(MetaFilePath, false, Encoding.UTF8))
         {
             SatelliteAgent firstAgent = Agents[0].GetComponent<SatelliteAgent>();
-            metaFile.WriteLine("TotalPopulation,TournamentSelection,EliteSelection,NGeneration,MaxHealth,MaxFuel,MaxTime");
-            metaFile.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6}", TotalPopulation, TournamentSelection, EliteSelection, NGeneration, firstAgent.MaxHealth, firstAgent.MaxFuel, firstAgent.MaxTime));
+            metaFile.WriteLine("TotalPopulation,TournamentSelection,EliteSelection,NGeneration,NAgents,MaxHealth,MaxFuel,MaxTime");
+            metaFile.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7}", TotalPopulation, TournamentSelection, EliteSelection, NGeneration, NAgents, firstAgent.MaxHealth, firstAgent.MaxFuel, firstAgent.MaxTime));
             Console.WriteLine("メタ情報ファイルの作成" + MetaFilePath);
         }
 
@@ -350,20 +350,26 @@ public class GaEnvironment : MonoBehaviour
 
     private void WriteBestGenes()
     {
-        Dictionary<int, List<int>> bestGenesByGeneration;
+        Dictionary<int, Dictionary<string, object>> bestGenesByGeneration;
         if (File.Exists(BestGenesPath))
         {
             // 既存のJSONファイルを読み込む
             string json = File.ReadAllText(BestGenesPath);
-            bestGenesByGeneration = JsonConvert.DeserializeObject<Dictionary<int, List<int>>>(json);
+            bestGenesByGeneration = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<string, object>>>(json);
         }
         else
         {
-            bestGenesByGeneration = new Dictionary<int, List<int>>();
+            bestGenesByGeneration = new Dictionary<int, Dictionary<string, object>>();
         }
 
         // 現在の世代の最も優れた遺伝子を追加
-        bestGenesByGeneration[Generation + 1] = BestGene.data;
+        var bestGeneData = new Dictionary<string, object>
+        {
+            { "Data", string.Join(" ", BestGene.data) },
+            { "Fitness", BestGene.Fitness },
+            { "UsedFuel", BestGene.UsedFuel }
+        };
+        bestGenesByGeneration[Generation + 1] = bestGeneData;
 
         // JSONファイルに書き出す
         string updatedJson = JsonConvert.SerializeObject(bestGenesByGeneration, Formatting.Indented);

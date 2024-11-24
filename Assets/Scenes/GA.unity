@@ -198,7 +198,7 @@ MonoBehaviour:
   totalPopulation: 200
   tournamentSelection: 85
   eliteSelection: 10
-  nAgents: 4
+  nAgents: 10
   nGeneration: 10
   GObjectAgent: {fileID: 1800785213}
   textDisplay: {fileID: 735091081}
