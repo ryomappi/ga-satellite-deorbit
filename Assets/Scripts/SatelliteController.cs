@@ -5,9 +5,9 @@ using UnityEngine.UIElements;
 public class SatelliteController : MonoBehaviour
 {
     public GameObject earth;
-    private float gravitationalConstant = 6.67430e-20f; // 万有引力定数 (km^3/kg/s^2)
-    private float earthMass;
-    private float satelliteMass;
+    public float gravitationalConstant = 6.67430e-20f; // 万有引力定数 (km^3/kg/s^2)
+    private float earthMass { get; set; }
+    private float satelliteMass { get; set; }
     private SatelliteAgent satelliteAgent;
     private Thruster[] thrusters;
 

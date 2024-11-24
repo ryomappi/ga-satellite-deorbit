@@ -35,7 +35,8 @@ public class SatelliteAgent : Agent
         InitialHeight = 1000f;
         StartPosition = new Vector3(12756.0f / 2.0f + InitialHeight, 0, 0);  // 地球の半径 + 衛星の高度 (km)
         InitialMass = 100f;
-        InitialVelocity = 7.350103183f;
+        // InitialVelocity = 7.350103183f;
+        InitialVelocity = CalcInitialVelocity();
         StartVelocity = new Vector3(0, InitialVelocity, 0);
         Health = MaxHealth;
         CurrentHeight = GetCurrentHeight();
@@ -49,11 +50,15 @@ public class SatelliteAgent : Agent
         SatelliteRb.linearVelocity = StartVelocity;
     }
 
-    private void CalcInitialVelocity()
+    private float CalcInitialVelocity()
     {
         // 衛星の初速を計算する
         // 速度 = sqrt(G * M / r)
-        
+        float G = 6.67430e-20f;
+        float M = 5.972e24f;
+        float r = 12756.0f / 2.0f + InitialHeight;
+        float initialVelocity = Mathf.Sqrt(G * M / r);
+        return initialVelocity;
     }
 
     public override void Stop()
