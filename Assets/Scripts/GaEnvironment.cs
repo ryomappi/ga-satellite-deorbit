@@ -31,8 +31,9 @@ public class GaEnvironment : MonoBehaviour
     private float AvgUsedFuel { get; set; }  // 一世代の使用燃料の平均
     private float SumUsedTime { get; set; }  // 一世代の使用時間の合計
     private float AvgUsedTime { get; set; }  // 一世代の使用時間の平均
-    private float Top10AvgUsedFuel { get; set; }  // 上位10%の使用燃料の平均
-    private float Top10AvgUsedTime { get; set; }  // 上位10%の使用時間の平均
+    private int TopN { get; set; }  // 上位N体のエージェントの平均を取るか
+    private float Top10AvgUsedFuel { get; set; }  // 上位10体の使用燃料の平均
+    private float Top10AvgUsedTime { get; set; }  // 上位10体の使用時間の平均
     private int SucceededAgents { get; set; }  // タスクを完了したエージェントの数
     private List<GameObject> GObjects = new List<GameObject>();  // 生成したゲームオブジェクトを格納するリスト
     private List<Agent> Agents = new List<Agent>();  // 生成したエージェントを格納するリスト <- エージェントの基本的な操作ができる
@@ -264,6 +265,7 @@ public class GaEnvironment : MonoBehaviour
 
         // Top10の遺伝子の使用燃料と使用時間の平均を計算
         var succeededTop10Genes = Genes.Where(g => g.Succeeded).OrderByDescending(g => g.Fitness).Take(10).ToList();
+        TopN = Math.Min(10, succeededTop10Genes.Count);
         if (succeededTop10Genes.Count > 0)
         {
             Top10AvgUsedFuel = succeededTop10Genes.Average(g => g.UsedFuel);
@@ -341,7 +343,7 @@ public class GaEnvironment : MonoBehaviour
     {
         if (TextDisplay != null)
         {
-            TextDisplay.UpdateText(TotalPopulation, TotalPopulation - CurrentGenes.Count, Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime, Top10AvgUsedFuel, Top10AvgUsedTime);
+            TextDisplay.UpdateText(TotalPopulation, TotalPopulation - CurrentGenes.Count, Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime, TopN, Top10AvgUsedFuel, Top10AvgUsedTime);
         }
         else
         {
