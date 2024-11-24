@@ -43,6 +43,7 @@ public class GaEnvironment : MonoBehaviour
     private Queue<Gene> CurrentGenes;  // 現在の遺伝子を格納するキュー
     [Header("Gene"), SerializeField] private GeneOperator Operator = null;  // 遺伝子操作を行うオペレーター
     private Gene BestGene = new Gene();
+    private Gene GenBestGene = new Gene();
     private string RecordPath;
     private string MetaFilePath;
     private string BestGenePath;
@@ -179,7 +180,11 @@ public class GaEnvironment : MonoBehaviour
 
                 // 記録更新
                 float record = CalcRecord(p);
-                GenBestRecord = Mathf.Max(record, GenBestRecord);
+                if (record > GenBestRecord)
+                {
+                    GenBestRecord = record;
+                    GenBestGene = p.gene;
+                }
                 if (record > BestRecord)
                 {
                     BestRecord = record;
@@ -259,6 +264,7 @@ public class GaEnvironment : MonoBehaviour
         SumUsedTime = 0;
         GenBestRecord = -1000;
         SucceededAgents = 0;
+        GenBestGene = new Gene();  // 一世代終わったら初期化
         Agents.ForEach(a => a.Reset());
         SetStartAgents();
         UpdateText();
@@ -365,9 +371,9 @@ public class GaEnvironment : MonoBehaviour
         // 現在の世代の最も優れた遺伝子を追加
         var bestGeneData = new Dictionary<string, object>
         {
-            { "Data", string.Join(" ", BestGene.data) },
-            { "Fitness", BestGene.Fitness },
-            { "UsedFuel", BestGene.UsedFuel }
+            { "Data", string.Join(" ", GenBestGene.data) },
+            { "Fitness", GenBestGene.Fitness },
+            { "UsedFuel", GenBestGene.UsedFuel }
         };
         bestGenesByGeneration[Generation + 1] = bestGeneData;
 
