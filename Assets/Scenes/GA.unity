@@ -195,9 +195,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68276753095e84193973a08044b5ee42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalPopulation: 1000
+  totalPopulation: 200
   tournamentSelection: 85
-  eliteSelection: 4
+  eliteSelection: 50
   nAgents: 200
   nGeneration: 10
   GObjectAgent: {fileID: 1800785213}

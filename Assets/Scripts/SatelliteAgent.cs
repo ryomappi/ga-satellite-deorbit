@@ -132,24 +132,28 @@ public class SatelliteAgent : Agent
     public float CalcFitness()
     {
         /* 適応度の計算
-            F(x) = w_1 * \frac{T_current}{T_max} + w_2 * \frac{F_current}{F_max} + w_3 * P
+            F(x) = w_1 * \frac{T_current}{T_max} + w_2 * \frac{F_current}{F_max} + w_3 * \frac{D}{P}
             - T_current: 残り時間
             - T_max: 最大使用時間
             - F_current: 燃料残量
             - F_max: 最大使用燃料
-            - P: タスクを達成したかどうか
+            - D: 降下距離
+            - P: 最大降下距離
             - w_1, w_2, w_3: 重み
+
+            値域: 0 <= F(x) <= 1
         */
 
-        float w1 = 0.2f;
-        float w2 = 0.8f;
-        float w3 = 1;
+        float w1 = 0.1f;
+        float w2 = 0.3f;
+        float w3 = 0.6f;
         float T_current = MaxTime - UsedTime;
         float T_max = MaxTime;
         float F_current = MaxFuel - UsedFuel;
         float F_max = MaxFuel;
-        float P = (Succeeded ? 0 : -1) * 1000;  // タスク達成時と失敗時で報酬に大きな差をつける
-        return w1 * (T_current / T_max) + w2 * F_current / F_max + w3 * P;
+        float P = InitialHeight - TargetHeight;  // タスク達成時と失敗時で報酬に大きな差をつける
+        float D = Mathf.Min(InitialHeight - CurrentHeight, P);  // 目標高度までの距離
+        return w1 * (T_current / T_max) + w2 * (F_current / F_max) + w3 * (D / P);
     }
 
     // Agentの更新・終了判定と報酬の更新
