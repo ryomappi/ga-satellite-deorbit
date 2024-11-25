@@ -104,9 +104,6 @@ public class SatelliteAgent : Agent
     // 地球中心基準での衛星の姿勢の傾きを計算
     public Vector3 GetSatelliteTilt()
     {
-        // 地球中心（原点）を基準とした衛星の位置ベクトルを取得
-        Vector3 position = transform.position.normalized;
-
         // 衛星の "up" ベクトルを取得（衛星のローカル座標系での上方向）
         Vector3 satelliteUp = transform.up.normalized;
 
@@ -152,7 +149,7 @@ public class SatelliteAgent : Agent
         float F_current = MaxFuel - UsedFuel;
         float F_max = MaxFuel;
         float P = (Succeeded ? 0 : -1) * 1000;  // タスク達成時と失敗時で報酬に大きな差をつける
-        return w1 * (T_current / T_max) + w2 * Mathf.Pow(F_current / F_max, 2) + w3 * P;
+        return w1 * (T_current / T_max) + w2 * F_current / F_max + w3 * P;
     }
 
     // Agentの更新・終了判定と報酬の更新

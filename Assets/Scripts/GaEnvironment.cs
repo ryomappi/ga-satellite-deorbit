@@ -35,6 +35,7 @@ public class GaEnvironment : MonoBehaviour
     private float Top10AvgUsedFuel { get; set; }  // 上位10体の使用燃料の平均
     private float Top10AvgUsedTime { get; set; }  // 上位10体の使用時間の平均
     private int SucceededAgents { get; set; }  // タスクを完了したエージェントの数
+    private float Diversity { get; set; }  // 多様性 (ハミング距離により計算)
     private List<GameObject> GObjects = new List<GameObject>();  // 生成したゲームオブジェクトを格納するリスト
     private List<Agent> Agents = new List<Agent>();  // 生成したエージェントを格納するリスト <- エージェントの基本的な操作ができる
     private List<Gene> Genes = new List<Gene>();  // 生成した遺伝子を格納するリスト
@@ -92,7 +93,7 @@ public class GaEnvironment : MonoBehaviour
             RecordPath = GetUniqueFilePath(directoryPath, "record", "csv", IsConsecutive);
             using (StreamWriter file = new StreamWriter(RecordPath, false, Encoding.UTF8))
             {
-                file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", "Generation", "Best Record", "Best this gen", "Succeeded Agents", "Average Fitness", "Average Used Fuel", "Average Used Time", "Top 10 Average Used Fuel", "Top 10 Average Used Time"));
+                file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}", "Generation", "Best Record", "Best this gen", "Diversity", "Succeeded Agents", "Average Fitness", "Average Used Fuel", "Average Used Time", "Top 10 Average Used Fuel", "Top 10 Average Used Time"));
                 Console.WriteLine("ファイルの作成" + RecordPath);
             }
         }
@@ -327,7 +328,7 @@ public class GaEnvironment : MonoBehaviour
         // トーナメント選択 + 交叉
         while (children.Count < TotalPopulation)
         {
-            var tournamentMembers = Genes.AsEnumerable().OrderBy(x => Guid.NewGuid()).Take(tournamentSelection).ToList();
+            var tournamentMembers = Genes.AsEnumerable().OrderBy(x => Guid.NewGuid()).Take(TournamentSelection).ToList();
             tournamentMembers.Sort(CompareGenes);
             Gene child1, child2;
             (child1, child2) = Operator.Crossover(tournamentMembers[0], tournamentMembers[1], Generation);
@@ -336,9 +337,42 @@ public class GaEnvironment : MonoBehaviour
         }
         Genes = children;
         Generation++;
+
+        // 世代の多様性を定量化
+        Diversity = CalcDiversity(Genes);
+        Debug.Log($"Generation {Generation} Diversity: {Diversity}");
+
         WriteRecord();
     }
 
+    private float CalcDiversity(List<Gene> genes)
+    {
+        int totalPairs = 0;
+        int totalDifferences = 0;
+
+        for (int i = 0; i < genes.Count; i++)
+        {
+            for (int j = i + 1; j < genes.Count; j++)
+            {
+                totalPairs++;
+                totalDifferences += CalcHammingDistance(genes[i], genes[j]);
+            }
+        }
+        return (float)totalDifferences / totalPairs;
+    }
+
+    private int CalcHammingDistance(Gene gene1, Gene gene2)
+    {
+        int distance = 0;
+        for (int i = 0; i < gene1.data.Count; i++)
+        {
+            if (gene1.data[i] != gene2.data[i])
+            {
+                distance++;
+            }
+        }
+        return distance;
+    }
     private void UpdateText()
     {
         if (TextDisplay != null)
@@ -361,7 +395,7 @@ public class GaEnvironment : MonoBehaviour
         if (!OutputRecord) return;
         using (StreamWriter file = new StreamWriter(RecordPath, true, Encoding.UTF8))
         {
-            file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", Generation, BestRecord, GenBestRecord, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime, Top10AvgUsedFuel, Top10AvgUsedTime));
+            file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}", Generation, BestRecord, GenBestRecord, Diversity, SucceededAgents, AvgFitness, AvgUsedFuel, AvgUsedTime, Top10AvgUsedFuel, Top10AvgUsedTime));
         }
     }
 
