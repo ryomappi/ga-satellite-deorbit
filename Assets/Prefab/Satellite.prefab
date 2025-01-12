@@ -99,8 +99,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2651374d644bf4e1daeb4964292b865c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 60
-  fuelConsumption: 0.005
 --- !u!1 &4279985574434504366
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,8 +198,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2651374d644bf4e1daeb4964292b865c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 60
-  fuelConsumption: 0.005
 --- !u!1 &6221873601760347515
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,7 +211,7 @@ GameObject:
   - component: {fileID: 9186010567881383601}
   - component: {fileID: 361713318429674852}
   m_Layer: 0
-  m_Name: RightThruster
+  m_Name: LeftThruster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -301,8 +297,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2651374d644bf4e1daeb4964292b865c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 60
-  fuelConsumption: 0.005
 --- !u!1 &6974505069410188170
 GameObject:
   m_ObjectHideFlags: 0
@@ -332,10 +326,10 @@ Transform:
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2954398174011080212}
-  - {fileID: 7390809169043502976}
   - {fileID: 217209237706230107}
   - {fileID: 4056181077720990213}
+  - {fileID: 7390809169043502976}
+  - {fileID: 2954398174011080212}
   m_Father: {fileID: 2748980702267762113}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7946935742474729422
@@ -351,7 +345,7 @@ GameObject:
   - component: {fileID: 2604159780881818443}
   - component: {fileID: 6100074270831296651}
   m_Layer: 0
-  m_Name: LeftThruster
+  m_Name: RightThruster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -437,8 +431,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2651374d644bf4e1daeb4964292b865c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 60
-  fuelConsumption: 0.005
 --- !u!1 &8671342661150307985
 GameObject:
   m_ObjectHideFlags: 0
@@ -543,10 +535,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentHeight: 0
-  MaxHealth: 100
   Health: 0
-  MaxFuel: 20
-  MaxTime: 3600
 --- !u!54 &5899225072508332355
 Rigidbody:
   m_ObjectHideFlags: 0

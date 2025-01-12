@@ -175,7 +175,6 @@ public class GaEnvironment : MonoBehaviour
         // NGeneration世代目まで終了したら終了
         if (Generation >= NGeneration)
         {
-            Debug.Log("Finish");
             WriteBestGene();
 #if UNITY_EDITOR
             EditorApplication.isPlaying = false;  // エディタの再生を停止

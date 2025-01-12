@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,10 +13,10 @@ public class SatelliteAgent : Agent
     public float InitialHeight { get; set; }  // 初期高度 (km)
     private float TargetHeight = 500f;  // 目標高度 (km)
     [SerializeField] private float CurrentHeight;  // 現在の高度 (km)
-    public float MaxHealth = 100f;  // エージェントの最大体力
+    public float MaxHealth { get; private set; }  // エージェントの最大体力
     [SerializeField] private float Health;  // エージェントの体力
-    public float MaxFuel = 20f;  // エージェントの最大燃料 (kg)
-    public float MaxTime = 3600f;  // エージェントの最大使用時間 (s)
+    public float MaxFuel { get; private set; }  // エージェントの最大燃料 (kg)
+    public float MaxTime { get; private set; }  // エージェントの最大使用時間 (s)
     public bool IsGravitated { get; set; }  // 万有引力を適用するかどうか
     public List<int> GeneData { get; set; }  // 遺伝子データ
     private TrailRenderer TrailRenderer;
@@ -30,18 +31,19 @@ public class SatelliteAgent : Agent
     {
         InitialHeight = 1000f;
         InitialMass = 100f;
+        MaxHealth = 1000f;
+        MaxFuel = InitialMass * 0.2f;
+        MaxTime = 3600f * 24;
         InitialVelocity = CalcInitialVelocity();
         StartPosition = new Vector3(12756.0f / 2.0f + InitialHeight, 0, 0);  // 地球の半径 + 衛星の高度 (km)
         StartVelocity = new Vector3(0, InitialVelocity, 0);
         Health = MaxHealth;
-        MaxFuel = 20f;
-        MaxTime = 3600f;
         CurrentHeight = GetCurrentHeight();
         SatelliteRb.useGravity = false;
         IsGravitated = true;
 
         // 衛星の初期位置を設定
-        transform.position = new Vector3(12756.0f / 2.0f + 1000f, 0, 0);
+        transform.position = StartPosition;
         // 衛星の質量、初速、重力を設定
         SatelliteRb.mass = InitialMass;
         SatelliteRb.linearVelocity = StartVelocity;
@@ -110,10 +112,10 @@ public class SatelliteAgent : Agent
         // 地球中心基準での衛星の傾きを計算
         float tiltX = Vector3.Dot(satelliteUp, Vector3.right);  // X軸方向の傾き
         float tiltY = Vector3.Dot(satelliteUp, Vector3.up);     // Y軸方向の傾き
-        float tiltZ = Vector3.Dot(satelliteUp, Vector3.forward);// Z軸方向の傾き
+        // float tiltZ = Vector3.Dot(satelliteUp, Vector3.forward);// Z軸方向の傾き
 
         // 傾きをベクトルとして返す
-        return new Vector3(tiltX, tiltY, tiltZ);
+        return new Vector3(tiltX, tiltY, 0);
     }
 
     public int GetTiltSegment()
@@ -121,10 +123,9 @@ public class SatelliteAgent : Agent
         // 衛星の傾きベクトルを取得
         Vector3 tilt = GetSatelliteTilt();
 
-        // 任意の軸に対する傾きをセグメント化
-        // 例: Z軸方向の傾きを32等分
-        float tiltZAngle = Mathf.Atan2(tilt.z, tilt.x) * Mathf.Rad2Deg;
-        int segment = (int)((tiltZAngle + 360) % 360 / 11.25f);
+        // 傾きベクトルからXY平面上の角度に変換
+        float xyAngle = Mathf.Atan2(tilt.y, tilt.x) * Mathf.Rad2Deg;
+        int segment = (int)((xyAngle + 180) / 11.25f);
 
         return segment;
     }
@@ -132,13 +133,13 @@ public class SatelliteAgent : Agent
     public float CalcFitness()
     {
         /* 適応度の計算
-            F(x) = w_1 * \frac{T_current}{T_max} + w_2 * \frac{F_current}{F_max} + w_3 * \frac{D}{P}
+            F(x) = w_1 * \frac{T_current}{T_max} + w_2 * \frac{F_current}{F_max} + w_3 * \frac{D_desc}{D_max}
             - T_current: 残り時間
             - T_max: 最大使用時間
             - F_current: 燃料残量
             - F_max: 最大使用燃料
-            - D: 降下距離
-            - P: 最大降下距離
+            - D_desc: 降下距離
+            - D_max: 最大降下距離
             - w_1, w_2, w_3: 重み
 
             値域: 0 <= F(x) <= 1
@@ -151,9 +152,9 @@ public class SatelliteAgent : Agent
         float T_max = MaxTime;
         float F_current = MaxFuel - UsedFuel;
         float F_max = MaxFuel;
-        float P = InitialHeight - TargetHeight;  // タスク達成時と失敗時で報酬に大きな差をつける
-        float D = Mathf.Min(InitialHeight - CurrentHeight, P);  // 目標高度までの距離
-        return w1 * (T_current / T_max) + w2 * (F_current / F_max) + w3 * (D / P);
+        float D_max = InitialHeight - TargetHeight;  // 最大降下距離
+        float D_desc = Mathf.Min(InitialHeight - CurrentHeight, D_max);  // 目標高度までの距離
+        return w1 * (T_current / T_max) + w2 * (F_current / F_max) + w3 * (D_desc / D_max);
     }
 
     // Agentの更新・終了判定と報酬の更新
@@ -199,10 +200,16 @@ public class SatelliteAgent : Agent
         }
 
         // 高度が減少していない場合体力を減らし、減少している場合は体力を回復
-        if (CurrentHeight >= prevHeight)
+        float epsilon = 1e-5f;
+        if (Mathf.Abs(CurrentHeight - prevHeight) <= epsilon)
+        {
+            // なにもしない
+        }
+        else if (CurrentHeight > prevHeight)
         {
             Health -= 0.1f;
-        } else
+        }
+        else
         {
             Health += 0.01f;
             Health = Mathf.Min(Health, MaxHealth);

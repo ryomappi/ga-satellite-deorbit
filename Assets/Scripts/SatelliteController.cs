@@ -48,15 +48,15 @@ public class SatelliteController : MonoBehaviour
         {
             if ((thrustState & (1 << i)) != 0)
             {
-                if (satelliteAgent.SatelliteRb.mass - thrusters[i].fuelConsumption * Time.fixedDeltaTime < satelliteAgent.InitialMass - satelliteAgent.MaxFuel) continue;
+                if (satelliteAgent.SatelliteRb.mass - thrusters[i].fuelConsumptionRate * Time.fixedDeltaTime < satelliteAgent.InitialMass - satelliteAgent.MaxFuel) continue;
                 else {
                     // スラスタの推力を適用
                     Vector3 thrustForce = thrusters[i].direction * thrusters[i].force;
                     satelliteAgent.SatelliteRb.AddForce(thrustForce, ForceMode.Force);
 
                     // スラスタ噴くごとに燃料を消費
-                    satelliteAgent.SatelliteRb.mass -= thrusters[i].fuelConsumption * Time.fixedDeltaTime;  // 衛星の質量を更新
-                    satelliteAgent.AddUsedFuel(thrusters[i].fuelConsumption * Time.fixedDeltaTime);  // 使用燃料を更新
+                    satelliteAgent.SatelliteRb.mass -= thrusters[i].fuelConsumptionRate * Time.fixedDeltaTime;  // 衛星の質量を更新
+                    satelliteAgent.AddUsedFuel(thrusters[i].fuelConsumptionRate * Time.fixedDeltaTime);  // 使用燃料を更新
                 }
             }
         }
