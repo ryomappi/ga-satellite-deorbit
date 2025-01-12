@@ -217,10 +217,10 @@ public class GaEnvironment : MonoBehaviour
                 p.gene.Succeeded = succeeded;  // 遺伝子にタスク達成フラグを反映
 
                 SumFitness += fitness;
+                SumUsedFuel += usedFuel;
+                SumUsedTime += usedTime;
                 if (succeeded)
                 {  // タスクを完了したエージェントに対してのみ計算する
-                    SumUsedFuel += usedFuel;
-                    SumUsedTime += usedTime;
                     SucceededAgents++;
                 }
             }

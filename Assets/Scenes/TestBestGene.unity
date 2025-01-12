@@ -603,7 +603,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GObjectAgent: {fileID: 808065123}
-  BestGeneFileName: best_gene_20241125_001437
+  BestGeneFileName: test_gene
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
