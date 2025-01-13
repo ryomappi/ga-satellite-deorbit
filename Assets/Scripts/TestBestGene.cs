@@ -52,6 +52,14 @@ public class TestBestGene : MonoBehaviour
         {
             Debug.Log("Task completed.");
             Debug.Log($"Fitness: {testAgent.Fitness}");
+            if (testAgent.Succeeded)
+            {
+                Debug.Log("Succeeded.");
+            }
+            else
+            {
+                Debug.Log("Failed.");
+            }
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
