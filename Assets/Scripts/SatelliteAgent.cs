@@ -167,7 +167,7 @@ public class SatelliteAgent : Agent
 
         float w1 = 0.1f;
         float w2 = 0.3f;
-        float w3 = 0.6f;
+        float w3 = 10f;
         float T_current = MaxTime - UsedTime;
         float T_max = MaxTime;
         float F_current = MaxFuel - UsedFuel;
