@@ -58,7 +58,7 @@ public class SatelliteGeneOperator : GeneOperator
         // 値が取りうる範囲の 100% の範囲で摂動を与える
         // 0 <= p <= 1
         int r = Mathf.Max(1, Mathf.RoundToInt((max - min) * p * PosProb));
-        x += UnityEngine.Random.Range(-r, r);
+        x += UnityEngine.Random.Range(-r, r + 1);
         x = Mathf.Clamp(x, min, max);
         return x;
     }
