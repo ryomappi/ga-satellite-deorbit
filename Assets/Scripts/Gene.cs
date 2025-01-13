@@ -1,5 +1,3 @@
-
-
 // 衛星エージェントの遺伝子情報を定義するクラス
 using System.Collections.Generic;
 

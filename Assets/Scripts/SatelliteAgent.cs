@@ -130,6 +130,26 @@ public class SatelliteAgent : Agent
         return segment;
     }
 
+    // 衛星の速度ベクトルの傾きのセグメントを取得
+    public int GetVelocitySegment()
+    {
+        // 衛星の速度ベクトルを取得
+        Vector3 velocity = SatelliteRb.linearVelocity;
+
+        // 速度がほぼゼロのとき, セグメントを0番とする
+        if (velocity.sqrMagnitude < 1e-6f) {
+            return 0;
+        }
+
+        // XY平面上の速度の角度を求める
+        float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+        // 0 ~ 360度に正規化
+        float normalizedAngle = (angle + 360f) % 360f;
+        // 11.25度刻みで32分割
+        int segment = (int)(normalizedAngle / 11.25f);
+        return segment;
+    }
+
     public float CalcFitness()
     {
         /* 適応度の計算
@@ -172,15 +192,15 @@ public class SatelliteAgent : Agent
         Gravitate();  // memo: これはSatelliteController.cs内のFixedUpdate()で呼び出してもいいかも
 
         // 衛星の角度に応じてスラスタを制御 + 質量・使用燃料を更新
-        int tiltSegment = GetTiltSegment();
-        if (tiltSegment >= 0 && tiltSegment < GeneData.Count)
+        int velocitySegment = GetVelocitySegment();
+        if (velocitySegment >= 0 && velocitySegment < GeneData.Count)
         {
-            int thrustState = GeneData[tiltSegment];  // 0~15の値
+            int thrustState = GeneData[velocitySegment];  // 0~15の値
             ApplyThrust(thrustState);
         }
         else
         {
-            Debug.LogError("Angle segment out of range: " + tiltSegment);
+            Debug.LogError("Angle segment out of range: " + velocitySegment);
         }
 
         // 使用時間を更新

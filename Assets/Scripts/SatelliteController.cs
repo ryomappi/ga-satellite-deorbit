@@ -44,21 +44,49 @@ public class SatelliteController : MonoBehaviour
         // 燃料がない場合にはスラスタを噴射しない
         if (satelliteAgent.SatelliteRb.mass <= satelliteAgent.InitialMass - satelliteAgent.MaxFuel) return;
 
+        // 進行方向に対する相対的な上下左右を再計算する
+        Vector3 velocity = satelliteAgent.SatelliteRb.linearVelocity;
+        if (velocity.sqrMagnitude < 1e-6f)
+        {
+            // 速度が極端に小さい場合はスラスタ噴射なし (例)
+            return;
+        }
+
+        Vector3 forward = velocity.normalized;
+        Vector3 right = new Vector3(forward.y, -forward.x, 0).normalized;
+
+        int upBit = (thrustState & 8) >> 3;  // 8 => 1000
+        int downBit = (thrustState & 4) >> 2;  // 4 => 0100
+        int leftBit = (thrustState & 2) >> 1;  // 2 => 0010
+        int rightBit = thrustState & 1;       // 1 => 0001
+
+        // 噴射方向を合成
+        Vector3 thrustForce = Vector3.zero;
+        thrustForce += (upBit == 1) ? forward * thrusters[0].force : Vector3.zero;
+        thrustForce += (downBit == 1) ? -forward * thrusters[0].force : Vector3.zero;
+        thrustForce += (leftBit == 1) ? -right * thrusters[0].force : Vector3.zero;
+        thrustForce += (rightBit == 1) ? right * thrusters[0].force : Vector3.zero;
+
+        // 使用する燃料を計算
+        int activeThrusters = 0;
         for (int i = 0; i < thrusters.Length; i++)
         {
             if ((thrustState & (1 << i)) != 0)
             {
-                if (satelliteAgent.SatelliteRb.mass - thrusters[i].fuelConsumptionRate * Time.fixedDeltaTime < satelliteAgent.InitialMass - satelliteAgent.MaxFuel) continue;
-                else {
-                    // スラスタの推力を適用
-                    Vector3 thrustForce = thrusters[i].direction * thrusters[i].force;
-                    satelliteAgent.SatelliteRb.AddForce(thrustForce, ForceMode.Force);
-
-                    // スラスタ噴くごとに燃料を消費
-                    satelliteAgent.SatelliteRb.mass -= thrusters[i].fuelConsumptionRate * Time.fixedDeltaTime;  // 衛星の質量を更新
-                    satelliteAgent.AddUsedFuel(thrusters[i].fuelConsumptionRate * Time.fixedDeltaTime);  // 使用燃料を更新
-                }
+                activeThrusters++;
             }
+        }
+        float fuelConsumption = thrusters[0].fuelConsumptionRate * Time.fixedDeltaTime * activeThrusters;
+
+        // スラスタの推力を適用
+        if (satelliteAgent.SatelliteRb.mass - fuelConsumption < satelliteAgent.InitialMass - satelliteAgent.MaxFuel) return;
+        else
+        {
+            satelliteAgent.SatelliteRb.AddForce(thrustForce, ForceMode.Force);
+
+            // 燃料を消費
+            satelliteAgent.SatelliteRb.mass -= fuelConsumption;  // 衛星の質量を更新
+            satelliteAgent.AddUsedFuel(fuelConsumption);  // 使用燃料を更新
         }
     }
 }
