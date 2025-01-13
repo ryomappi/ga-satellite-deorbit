@@ -73,3 +73,6 @@ crashlytics-build.properties
 
 # Data files
 /[Aa]ssets/Results/
+
+# .vscode directory
+.vscode/
